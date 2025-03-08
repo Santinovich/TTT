@@ -1,5 +1,5 @@
 const { Database } = require("sqlite3");
-const { Ubicacion, Barrio } = require("../model/model");
+const { Ubicacion, Barrio } = require("../model");
 
 class UbicacionService {
   /**

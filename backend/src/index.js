@@ -1,28 +1,26 @@
-const { Database } = require("sqlite3");
-const { Socio } = require("./model/model");
 const express = require("express");
-const SociosService = require("./service/sociosService");
+const { publicIpv4 } = require("public-ip");
 
-const db = new Database("TTT.db");
+const sociosRoutes = require("./routes/sociosRoutes");
 
 const app = express();
 const port = 3000;
 
-const sociosService = new SociosService(db);
+app.use(express.json())
+app.use("/api/v1/socios", sociosRoutes);
 
-app.get("/socios", async (req, res) => {
+app.listen(port, async () => {
+  console.log(
+    `Servidor de TTT corriendo\n\nLocal:   http://localhost:${port}/`
+  );
   try {
-    if (req.query.jubilado === "true") {
-      res.json(await sociosService.getJubilados());
-    } else {
-      res.json(await sociosService.getSocios());
-    }
+    const publicIp = await publicIpv4();
+    console.log(
+      `Público: http://${publicIp}:${port}/ (verificar puertos abiertos)`
+    );
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener los socios" });
+    console.error(
+      "No se pudo obtener la IP pública, servidor posiblemente sin acceso a internet"
+    );
   }
-});
-
-app.listen(port, () => {
-  console.log(`Servidor de TTT corriendo en http://localhost:${port}/`);
 });

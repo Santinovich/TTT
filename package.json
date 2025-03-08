@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "public-ip": "^7.0.1"
+  }
+}

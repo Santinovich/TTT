@@ -1,6 +1,7 @@
 const { Database } = require("sqlite3");
-const { Socio, Jubilacion, Jubilado } = require("../model/model");
-const UbicacionService = require("./ubicacionService");
+const { Socio, Jubilacion, Jubilado } = require("../model");
+const UbicacionService = require("./UbicacionService");
+const ContactoService = require("./ContactoService");
 
 class SociosService {
   /**
@@ -9,6 +10,7 @@ class SociosService {
   constructor(database) {
     this.database = database;
     this.ubicacionService = new UbicacionService(database);
+    this.contactoService = new ContactoService(database);
   }
 
   /**
@@ -17,42 +19,49 @@ class SociosService {
    */
   getSocioById(id) {
     return new Promise((resolve, reject) => {
-      this.database.get(
-        "SELECT * FROM socio WHERE id=?",
-        [id],
-        (error, row) => {
-          if (error) reject(error);
-          const socio = new Socio(
-            row.id,
-            row.nombre,
-            row.apellido,
-            row.num_dni,
-            row.url_dni
-          );
-          resolve(socio);
-        }
-      );
+      this.database.get("SELECT * FROM socio WHERE id=?", [id], async (error, row) => {
+        if (error) return reject(error);
+        if (!row) return resolve(null);
+        const ubicacion = await this.ubicacionService.getUbicacion(row.id);
+        const contacto = await this.contactoService.getContacto(row.id);
+        const socio = new Socio(
+          row.id,
+          row.nombre,
+          row.apellido,
+          new Date(row.nacimiento),
+          row.num_dni,
+          row.url_dni,
+          row.is_afiliado_pj ? true : false,
+          ubicacion,
+          contacto
+        );
+        resolve(socio);
+      });
     });
   }
   /**
    * @returns {Promise<Socio[]>}
    */
-  getSocios() { 
+  getSocios() {
     return new Promise((resolve, reject) => {
       this.database.all("SELECT * FROM socio", async (error, rows) => {
-        if (error) reject(error);
+        if (error) return reject(error);
         const socios = [];
         if (rows) {
           for (let row of rows) {
             const ubicacion = await this.ubicacionService.getUbicacion(row.id);
+            const contacto = await this.contactoService.getContacto(row.id);
             socios.push(
               new Socio(
                 row.id,
                 row.nombre,
                 row.apellido,
+                new Date(row.nacimiento),
                 row.num_dni,
                 row.url_dni,
-                ubicacion
+                row.is_afiliado_pj ? true : false,
+                ubicacion,
+                contacto
               )
             );
           }
@@ -70,7 +79,7 @@ class SociosService {
       this.database.all(
         "SELECT * FROM socio WHERE id IN (SELECT id_socio FROM jubilacion)",
         (error, rows) => {
-          if (error) reject(error);
+          if (error) return reject(error);
           const socios = [];
           if (rows) {
             for (let row of rows) {
@@ -79,6 +88,8 @@ class SociosService {
                   row.id,
                   row.nombre,
                   row.apellido,
+                  new Date(row.nacimiento),
+                  row.is_afiliado_pj ? true : false,
                   row.num_dni,
                   row.url_dni
                 )
@@ -90,30 +101,66 @@ class SociosService {
       );
     });
   }
+
   /**
-   * @returns {Promise<[Jubilacion]>}
+   * @param {SocioData} socioData
+   * @returns
    */
-  getJubilaciones() {
-    return new Promise((resolve, reject) => {
-      this.database.all("SELECT * from jubilacion", (error, rows) => {
-        if (error) reject(error);
-        const jubilaciones = [];
-        if (rows) {
-          for (let row of rows) {
-            jubilaciones.push(
-              new Jubilacion(
-                row.id,
-                row.nombre,
-                row.apellido,
-                row.num_dni,
-                row.url_dni
-              )
-            );
-          }
+  createSocio({ nombre, apellido, fechaNacimiento, numeroDni }) {
+    return new Promise(async (resolve, reject) => {
+      this.database.run(
+        "INSERT INTO socio (nombre, apellido, nacimiento, num_dni) VALUES (?, ?, ?, ?)",
+        [nombre, apellido, fechaNacimiento, numeroDni],
+        (error) => {
+          if (error) return reject(error);
+          resolve();
         }
-        resolve(jubilaciones);
+      );
+    });
+  }
+
+  /**
+   * @param {number} id
+   * @param {{nombre: string | null | undefined, apellido: string | null | undefined, fechaNacimiento: Date | null | undefined, numeroDni: number | null  | undefined}} socioData
+   */
+  updateSocio(id, socioData) {
+    return new Promise(async (resolve, reject) => {
+      const socio = await this.getSocioById(id);
+      if (!socio) return reject("Socio no encontrado");
+
+      let sql = "UPDATE socio SET ";
+      const keys = Object.keys(socioData).map((k) => this.renameKey(k));
+      if (keys.length === 0) return;
+      sql += keys.map((key) => `${key} = ?`).join(", ");
+      sql += " WHERE id = ?";
+      this.database.run(sql, [...Object.values(socioData), id], async (error) => {
+        if (error) return reject(error);
+        resolve(await this.getSocioById(id));
       });
     });
+  }
+
+  /**
+   *
+   * @param {number} id
+   * @returns {Socio} deletedSocio
+   */
+  deleteSocio(id) {
+    return new Promise(async (resolve, reject) => {
+      const socio = await this.getSocioById(id);
+      if (!socio) return reject("Socio no encontrado");
+
+      this.database.run("DELETE FROM socio WHERE id = ?", [id], (error) => {
+        if (error) return reject(error);
+        resolve(socio);
+      });
+    });
+  }
+
+  renameKey(str) {
+    if (str === "fechaNacimiento") return "nacimiento";
+    if (str === "numeroDni") return "num_dni";
+    return str;
   }
 }
 

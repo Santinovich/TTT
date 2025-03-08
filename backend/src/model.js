@@ -8,8 +8,9 @@ class Barrio {
 }
 
 class Ubicacion {
+  #id
   constructor(id, domicilio, idSocio, barrio) {
-    this.id = id;
+    this.#id = id;
     this.domicilio = domicilio;
     this.idSocio = idSocio;
     this.barrio = barrio;
@@ -17,8 +18,9 @@ class Ubicacion {
 }
 
 class Contacto {
+  #id;
   constructor(id, telefono, correo, idSocio) {
-    this.id = id;
+    this.#id = id;
     this.telefono = telefono;
     this.correo = correo;
     this.idSocio = idSocio;
@@ -37,17 +39,20 @@ class Socio {
   /**
    * @param {string} nombre
    * @param {string} apellido
+   * @param {Date} fechaNacimiento
    * @param {number} numeroDni
    * @param {string} urlDni
    * @param {Ubicacion} ubicacion
    * @param {Contacto} contacto
    */
-  constructor(id, nombre, apellido, numeroDni = null, urlDni = null, ubicacion = null, contacto = null) {
+  constructor(id, nombre, apellido, fechaNacimiento, numeroDni = null, urlDni = null, isAfiliadoPj = false, ubicacion = null, contacto = null) {
     this.id = id;
     this.nombre = nombre;
     this.apellido = apellido;
+    this.fechaNacimiento = new Date(fechaNacimiento);
     this.numeroDni = numeroDni;
     this.urlDni = urlDni;
+    this.isAfiliadoPj = isAfiliadoPj;
     this.ubicacion = ubicacion;
     this.contacto = contacto;
   }
