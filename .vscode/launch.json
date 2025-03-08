@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Ejecutar backend",
+      "cwd": "${workspaceFolder}/backend/src",
+      "program": "./index.js"
+    }
+  ]
+}
