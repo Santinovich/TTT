@@ -7,7 +7,12 @@ const app = express();
 const port = 3000;
 
 app.get('/', (req, res) => {
-res.send('Successful response.');
+
+db.all("select * from socio",(error,rows)=>{
+    res.send(rows);
+})
+
+
 });
 
 app.listen(port, () => {
