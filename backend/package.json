@@ -1,0 +1,11 @@
+{
+  "name": "ttt-backend",
+  "version": "1.0.0",
+  "description": "Base de datos ttt",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Santi",
+  "license": "ISC"
+}
