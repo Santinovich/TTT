@@ -1,11 +1,12 @@
 const express = require("express");
+const cors = require("cors");
 const { publicIpv4 } = require("public-ip");
-
 const sociosRoutes = require("./routes/sociosRoutes");
 
 const app = express();
 const port = 3000;
 
+app.use(cors())
 app.use(express.json())
 app.use("/api/v1/socios", sociosRoutes);
 

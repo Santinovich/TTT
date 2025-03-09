@@ -1,0 +1,22 @@
+.socios-list {
+    width: 100%;
+}
+
+.socios-list tr {
+    height: 40px;
+    border-color: transparent
+}
+
+.socios-list tr:nth-child(even) {
+    background-color: var(--background-contrast);
+}
+
+.socios-list tr:hover:not(:first-child) {
+    color: #fff;
+    background-color: color-mix(in srgb, var(--background-contrast), white 5%);
+    cursor: pointer;
+}
+
+.socios-list td {
+    padding: 10px;
+}
