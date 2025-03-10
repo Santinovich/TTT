@@ -1,12 +1,12 @@
 import { DataProvider } from "./context/DataContext";
-import SociosList from "./components/sociosList";
+import Dashboard from "./components/Dashboard";
 
 function App() {
-  return (
-    <DataProvider>
-      <SociosList />
-    </DataProvider>
-  );
+    return (
+        <DataProvider>
+            <Dashboard />
+        </DataProvider>
+    );
 }
 
 export default App;

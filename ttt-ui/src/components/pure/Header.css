@@ -1,0 +1,9 @@
+.header {
+    text-align: center;
+    background-color: var(--background-contrast);
+}
+
+.header h1 {
+    margin-top: 0px;
+    padding: 1rem;
+}
