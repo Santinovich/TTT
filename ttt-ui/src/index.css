@@ -3,6 +3,7 @@
     --background-contrast: rgb(37, 38, 41);
 
     --font-primary: #f8f8f8;
+    --primary-color: rgb(215, 120, 52);
 
     background-color: var(--background-main);
     color: var(--font-primary);
@@ -19,4 +20,8 @@ body,
 
 .main-container {
     width: 80%;
+}
+
+.selected {
+    background-color: var(--primary-color)
 }

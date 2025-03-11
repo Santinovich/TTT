@@ -1,3 +1,41 @@
+.socios-list-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.socios-list-container input {
+    background-color: rgba(255, 255, 255, 0.13);
+    color: #fff;
+    border: 0px;
+
+    padding: 0.5rem;
+    margin: 0px;
+
+    width: 100%;
+    box-sizing: border-box;
+
+}
+
+/**/
+
+.socios-list-side-panel {
+    background-color: var(--background-contrast);
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.socios-list-side-panel>div {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+/**/
+
 .socios-list {
     width: 100%;
 }
@@ -21,11 +59,28 @@
     padding: 10px;
 }
 
-.socios-list td input {
-    background-color: rgba(255, 255, 255, 0.13);
-    border: 0px;
+.socios-list-side-panel .filter {
+    padding: 0.25rem;
+    border-radius: 4px;
 
-    padding: 0.5rem;
+    border: 1px solid var(--primary-color);
+    font-weight: bold;
+    font-size: 12px;
 
-    margin: 0px;
+    width: fit-content;
 }
+
+.socios-list-side-panel .filter:hover {
+    cursor: pointer;
+    background-color: color-mix(in srgb, var(--primary-color), var(--background-main) 50%);
+}
+
+/**/
+
+.barrios-filters div {
+    margin-top: .25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
