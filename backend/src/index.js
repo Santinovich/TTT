@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { publicIpv4 } = require("public-ip");
 const sociosRoutes = require("./routes/sociosRoutes");
+const ubicacionRoutes = require("./routes/ubicacionRoutes");
 
 const app = express();
 const port = 3000;
@@ -9,6 +10,7 @@ const port = 3000;
 app.use(cors())
 app.use(express.json())
 app.use("/api/v1/socios", sociosRoutes);
+app.use("/api/v1/ubicacion", ubicacionRoutes);
 
 app.listen(port, async () => {
   console.log(

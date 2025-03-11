@@ -3,7 +3,6 @@ class Barrio {
     this.id = id;
     this.nombre = nombre;
     this.comuna = comuna;
-
   }
 }
 

@@ -7,8 +7,8 @@ function SociosList() {
   const dataContext = useContext(DataContext);
 
   const [barrioSearch, setBarrioSearch] = useState<string>("");
-  const [barriosIdFilters, setBarriosIdFilters] = useState<number[]>([1, 2, 3]);
-
+  const [barriosIdFilters, setBarriosIdFilters] = useState<number[]>([]);
+  
   const handleBarrioSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBarrioSearch(event.target.value);
   };
@@ -30,17 +30,28 @@ function SociosList() {
 
   if (dataContext !== undefined) {
     const BarriosListSelector = () => {
-        if (barrioSearch) return (
-        <ListSelector
-          elements={dataContext.barrios
-            .filter((b) => !(b.id in barriosIdFilters))
-            .map((b) => {return {key: b.id, value: b.nombre}})}
-          callback={(id) => {
-            const barrio = dataContext.barrios.find((b) => b.id === id);
-            if (barrio) addBarrioFilter(barrio.id);
-          }}
-        />
-      );
+      if (barrioSearch)
+        return (
+          <ListSelector
+            elements={dataContext.barrios
+              .filter((b) => {
+                return !barriosIdFilters.includes(b.id);
+              })
+              .filter((b) => {
+                const regex = new RegExp(".*" + barrioSearch + ".*", "i")
+                return b.nombre.match(regex) ? true : false;
+              })
+              .map((b) => {
+                console.log(b)
+                return { key: b.id, value: b.nombre };
+              })}
+            callback={(id) => {
+              const barrio = dataContext.barrios.find((b) => b.id === id);
+              if (barrio) addBarrioFilter(barrio.id);
+              setBarrioSearch("");
+            }}
+          />
+        );
     };
 
     return (
@@ -88,6 +99,12 @@ function SociosList() {
           {dataContext.socios.map((s) => {
             const fechaNacimiento = new Date(s.fechaNacimiento);
             const edad = calculateYears(fechaNacimiento, new Date());
+            if (barriosIdFilters.length > 0 ) {
+                if (!s.ubicacion || !s.ubicacion.barrio || !barriosIdFilters.includes(s.ubicacion.barrio.id)) {
+                    return null;
+                }
+
+            }
             return (
               <tr key={s.id}>
                 <td>{s.apellido}</td>

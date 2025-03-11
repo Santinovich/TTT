@@ -15,20 +15,35 @@ class UbicacionService {
    */
   getBarrio(id) {
     return new Promise((resolve, reject) => {
-      this.database.get(
-        "SELECT * FROM barrio WHERE id = ?",
-        [id],
-        (error, row) => {
-          if (error) reject(error);
-          let barrio = null;
-          if (row) {
-            barrio = new Barrio(row.id, row.nombre, row.comuna);
-          }
-          resolve(barrio);
+      this.database.get("SELECT * FROM barrio WHERE id = ?", [id], (error, row) => {
+        if (error) reject(error);
+        let barrio = null;
+        if (row) {
+          barrio = new Barrio(row.id, row.nombre, row.comuna);
         }
-      );
+        resolve(barrio);
+      });
     });
   }
+
+  /**
+   * @returns {Promise<Barrio[]>}
+   */
+  getBarrios() {
+    return new Promise((resolve, reject) => {
+      this.database.all("SELECT * FROM barrio", (error, rows) => {
+        if (error) reject(error);
+        let barrios = [];
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const barrio = new Barrio(row.id, row.nombre, row.comuna);
+          barrios.push(barrio);
+        }
+        resolve(barrios);
+      });
+    });
+  }
+
   /**
    *
    * @param {number} idSocio
@@ -44,12 +59,7 @@ class UbicacionService {
           let ubicacion = null;
           if (row) {
             const barrio = await this.getBarrio(row.id_barrio);
-            ubicacion = new Ubicacion(
-              row.id,
-              row.domicilio,
-              row.id_socio,
-              barrio
-            );
+            ubicacion = new Ubicacion(row.id, row.domicilio, row.id_socio, barrio);
           }
           resolve(ubicacion);
         }

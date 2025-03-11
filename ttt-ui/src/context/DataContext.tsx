@@ -1,17 +1,25 @@
 import { createContext, useEffect, useState } from "react";
 
+interface Barrio {
+  id: number;
+  nombre: string;
+  comuna: number;
+}
+
+interface Ubicacion {
+  id: number;
+  nombre: string;
+  domicilio: string;
+  barrio: Barrio | null;
+}
+
 interface Socio {
   id: number;
   nombre: string;
   apellido: string;
   fechaNacimiento: Date;
   numeroDni: number;
-}
-
-interface Barrio {
-  id: number;
-  nombre: string;
-  comuna: number;
+  ubicacion: Ubicacion | null;
 }
 
 interface DataContextType {
