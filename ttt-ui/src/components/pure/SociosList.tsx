@@ -8,7 +8,7 @@ function SociosList() {
 
   const [barrioSearch, setBarrioSearch] = useState<string>("");
   const [barriosIdFilters, setBarriosIdFilters] = useState<number[]>([]);
-  
+
   const handleBarrioSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBarrioSearch(event.target.value);
   };
@@ -30,28 +30,35 @@ function SociosList() {
 
   if (dataContext !== undefined) {
     const BarriosListSelector = () => {
-      if (barrioSearch)
-        return (
-          <ListSelector
-            elements={dataContext.barrios
-              .filter((b) => {
-                return !barriosIdFilters.includes(b.id);
-              })
-              .filter((b) => {
-                const regex = new RegExp(".*" + barrioSearch + ".*", "i")
-                return b.nombre.match(regex) ? true : false;
-              })
-              .map((b) => {
-                console.log(b)
-                return { key: b.id, value: b.nombre };
-              })}
-            callback={(id) => {
-              const barrio = dataContext.barrios.find((b) => b.id === id);
-              if (barrio) addBarrioFilter(barrio.id);
-              setBarrioSearch("");
-            }}
-          />
-        );
+      if (barrioSearch) {
+        const elements = dataContext.barrios
+          .filter((b) => {
+            return !barriosIdFilters.includes(b.id);
+          })
+          .filter((b) => {
+            const regex = new RegExp(".*" + barrioSearch + ".*", "i");
+            return b.nombre.match(regex) ? true : false;
+          })
+          .map((b) => {
+            console.log(b);
+            return { key: b.id, value: b.nombre };
+          });
+
+          console.log(elements)
+
+        if (elements.length > 0) {
+          return (
+            <ListSelector
+              elements={elements}
+              callback={(id) => {
+                const barrio = dataContext.barrios.find((b) => b.id === id);
+                if (barrio) addBarrioFilter(barrio.id);
+                setBarrioSearch("");
+              }}
+            />
+          );
+        }
+      }
     };
 
     return (
@@ -99,11 +106,14 @@ function SociosList() {
           {dataContext.socios.map((s) => {
             const fechaNacimiento = new Date(s.fechaNacimiento);
             const edad = calculateYears(fechaNacimiento, new Date());
-            if (barriosIdFilters.length > 0 ) {
-                if (!s.ubicacion || !s.ubicacion.barrio || !barriosIdFilters.includes(s.ubicacion.barrio.id)) {
-                    return null;
-                }
-
+            if (barriosIdFilters.length > 0) {
+              if (
+                !s.ubicacion ||
+                !s.ubicacion.barrio ||
+                !barriosIdFilters.includes(s.ubicacion.barrio.id)
+              ) {
+                return null;
+              }
             }
             return (
               <tr key={s.id}>
