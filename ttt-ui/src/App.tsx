@@ -1,12 +1,12 @@
 import { DataProvider } from "./context/DataContext";
 import Dashboard from "./components/Dashboard";
-import Componente from "./context/Componente";
+import Agregar from "./components/AgregarSocio";
 
 function App() {
     return (
         <DataProvider>
             <Dashboard />
-            <Componente />
+            <Agregar />
         </DataProvider>
     );
 }
