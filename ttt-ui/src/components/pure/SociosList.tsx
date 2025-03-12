@@ -1,9 +1,14 @@
-import { useContext, useState } from "react";
-import { DataContext } from "../../context/DataContext";
+import { Dispatch, useContext, useState } from "react";
+import { DataContext, Socio } from "../../context/DataContext";
 import ListSelector from "./ListSelector";
 import "./sociosList.css";
 
-function SociosList() {
+export interface SelectedSocio {
+  selectedSocio: Socio | undefined;
+  setSelectedSocio: Dispatch<React.SetStateAction<Socio | undefined>>;
+}
+
+function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
   const dataContext = useContext(DataContext);
 
   const [barrioSearch, setBarrioSearch] = useState<string>("");
@@ -43,8 +48,6 @@ function SociosList() {
             console.log(b);
             return { key: b.id, value: b.nombre };
           });
-
-          console.log(elements)
 
         if (elements.length > 0) {
           return (
@@ -116,7 +119,7 @@ function SociosList() {
               }
             }
             return (
-              <tr key={s.id}>
+              <tr key={s.id} onClick={() => setSelectedSocio(s)}>
                 <td>{s.apellido}</td>
                 <td>{s.nombre}</td>
                 <td>{edad}</td>

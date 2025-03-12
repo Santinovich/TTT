@@ -1,25 +1,32 @@
 import { createContext, useEffect, useState } from "react";
 
-interface Barrio {
+export interface Barrio {
   id: number;
   nombre: string;
   comuna: number;
 }
 
-interface Ubicacion {
+export interface Ubicacion {
   id: number;
   nombre: string;
   domicilio: string;
   barrio: Barrio | null;
 }
 
-interface Socio {
+export interface Contacto {
+  id: number;
+  correo: string;
+  telefono: number;
+}
+
+export interface Socio {
   id: number;
   nombre: string;
   apellido: string;
-  fechaNacimiento: Date;
+  fechaNacimiento: Date | null;
   numeroDni: number;
   ubicacion: Ubicacion | null;
+  contacto: Contacto | null;
 }
 
 interface DataContextType {
@@ -40,6 +47,10 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = (await response.json()) as Socio[];
+      data.forEach(
+        (socio) =>
+          (socio.fechaNacimiento = socio.fechaNacimiento ? new Date(socio.fechaNacimiento) : null)
+      );
       setSocios(data);
     } catch (error) {
       console.error(error);

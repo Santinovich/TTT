@@ -3,6 +3,7 @@
     --background-contrast: rgb(37, 38, 41);
 
     --font-primary: #f8f8f8;
+    --font-light: #f8f8f88b;
     --primary-color: rgb(215, 120, 52);
 
     background-color: var(--background-main);
@@ -24,4 +25,22 @@ body,
 
 .selected {
     background-color: var(--primary-color)
+}
+
+.info-text {
+    color: var(--font-light);
+    font-style: italic;
+}
+
+.col {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.col50 {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
