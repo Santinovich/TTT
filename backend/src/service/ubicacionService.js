@@ -66,6 +66,20 @@ class UbicacionService {
       );
     });
   }
+
+  createUbicacion(idSocio, idBarrio, domicilio) {
+    return new Promise((resolve, reject) => {
+      this.database.run(
+        "INSERT INTO ubicacion (id_socio, id_barrio, domicilio) VALUES (?, ?, ?)",
+        [idSocio, idBarrio, domicilio],
+        async (error) => {
+          if (error) reject(error);
+          resolve();
+        }
+      );
+    });
+  }
 }
+
 
 module.exports = UbicacionService;

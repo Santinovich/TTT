@@ -30,9 +30,15 @@ sociosRouter.post("/", async (req, res) => {
   const apellido = req.body?.apellido || null;
   const fechaNacimiento = req.body?.fechaNacimiento;
   const numeroDni = req.body?.numeroDni || null;
+  const domicilio = req.body?.domicilio || null;
+  const idBarrio = req.body?.idBarrio || null;
+
   try {
     if (nombre) {
       await sociosService.createSocio({ nombre, apellido, fechaNacimiento, numeroDni });
+      if (domicilio && idBarrio) {
+        
+      }
       res.json({ message: "Socio creado exitosamente" });
     } else {
       res.status(400).json({ error: "El nombre es obligatorio" });

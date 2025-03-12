@@ -3,7 +3,6 @@ import SociosList from "./pure/SociosList";
 import "./Dashboard.css";
 import { useEffect, useState } from "react";
 import { Socio } from "../context/DataContext";
-import { SocioEditor } from "./pure/SocioEditor";
 
 function Dashboard() {
 
@@ -20,7 +19,6 @@ function Dashboard() {
                 <div className="main-container">
                     <h2>Socios</h2>
                     <SociosList selectedSocio={selectedSocio} setSelectedSocio={setSelectedSocio} />
-                    <SocioEditor selectedSocio={selectedSocio} setSelectedSocio={setSelectedSocio} />
                 </div>
             </div>
         </>

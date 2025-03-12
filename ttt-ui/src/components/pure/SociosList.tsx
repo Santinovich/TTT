@@ -2,6 +2,7 @@ import { Dispatch, useContext, useState } from "react";
 import { DataContext, Socio } from "../../context/DataContext";
 import ListSelector from "./ListSelector";
 import "./sociosList.css";
+import { SocioEditor } from "./SocioEditor";
 
 export interface SelectedSocio {
   selectedSocio: Socio | undefined;
@@ -34,6 +35,15 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
   };
 
   if (dataContext !== undefined) {
+    const getFilteredSocios = (): Socio[] => {
+      if (barriosIdFilters.length === 0) {
+        return dataContext.socios
+      }
+      const filteredSocios: Socio[] = dataContext.socios.filter(s => barriosIdFilters.includes(s.ubicacion?.barrio?.id ?? -1))
+      console.log(filteredSocios)
+      return filteredSocios;
+    }
+
     const BarriosListSelector = () => {
       if (barrioSearch) {
         const elements = dataContext.barrios
@@ -98,46 +108,32 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
             </div>
           </div>
         </div>
-        <table className="socios-list" rules="none">
-          <thead>
-            <tr>
-              <th>Apellido</th>
-              <th>Nombre</th>
-              <th>Edad</th>
-            </tr>
-          </thead>
-          {dataContext.socios.map((s) => {
-            const fechaNacimiento = new Date(s.fechaNacimiento);
-            const edad = calculateYears(fechaNacimiento, new Date());
-            if (barriosIdFilters.length > 0) {
-              if (
-                !s.ubicacion ||
-                !s.ubicacion.barrio ||
-                !barriosIdFilters.includes(s.ubicacion.barrio.id)
-              ) {
-                return null;
-              }
-            }
-            return (
-              <tr key={s.id} onClick={() => setSelectedSocio(s)}>
-                <td>{s.apellido}</td>
-                <td>{s.nombre}</td>
-                <td>{edad}</td>
+        <div className="col">
+          <table className="socios-list" rules="none">
+            <thead>
+              <tr>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>Edad</th>
               </tr>
-            );
-          })}
-          <tr>
-            <td>
-              <input type="text" name="newApellido" placeholder="Apellido" />
-            </td>
-            <td>
-              <input type="text" name="newNombre" placeholder="Nombre" />
-            </td>
-            <td>
-              <input type="date" name="newFechaNacimiento" placeholder="Fecha de nacimiento" />
-            </td>
-          </tr>
-        </table>
+            </thead>
+            <tbody>
+              {getFilteredSocios().map((s) => {
+                // TODO: corregir
+                const fechaNacimiento = s.fechaNacimiento ? s.fechaNacimiento : new Date();
+                const edad = calculateYears(fechaNacimiento, new Date());
+                return (
+                  <tr key={s.id} onClick={() => setSelectedSocio(s)}>
+                    <td>{s.apellido}</td>
+                    <td>{s.nombre}</td>
+                    <td>{edad}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <SocioEditor selectedSocio={selectedSocio} setSelectedSocio={setSelectedSocio} />
+        </div>
       </div>
     );
   }

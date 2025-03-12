@@ -4,24 +4,13 @@
     flex-direction: row;
 }
 
-.socios-list-container input {
-    background-color: rgba(255, 255, 255, 0.13);
-    color: #fff;
-    border: 0px;
-
-    padding: 0.5rem;
-    margin: 0px;
-
-    width: 100%;
-    box-sizing: border-box;
-
-}
-
 /**/
 
 .socios-list-side-panel {
     background-color: var(--background-contrast);
+
     width: 20%;
+    
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -49,7 +38,7 @@
     background-color: var(--background-contrast);
 }
 
-.socios-list tr:hover:not(:first-child) {
+.socios-list tr:hover {
     color: #fff;
     background-color: color-mix(in srgb, var(--background-contrast), white 5%);
     cursor: pointer;

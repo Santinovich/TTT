@@ -24,13 +24,15 @@ export interface Socio {
   nombre: string;
   apellido: string;
   fechaNacimiento: Date | null;
-  numeroDni: number;
+  numeroDni: number | null;
   ubicacion: Ubicacion | null;
   contacto: Contacto | null;
+  isAfiliadoPj: boolean;
 }
 
 interface DataContextType {
   socios: Socio[];
+  fetchSocios: () => Promise<void>;
   barrios: Barrio[];
 }
 
@@ -42,7 +44,7 @@ export function DataProvider({ children }: React.PropsWithChildren) {
 
   const fetchSocios = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/v1/socios");
+      const response = await fetch("/api/v1/socios");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -59,7 +61,7 @@ export function DataProvider({ children }: React.PropsWithChildren) {
 
   const fetchBarrios = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/v1/ubicacion/barrios");
+      const response = await fetch("/api/v1/ubicacion/barrios");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -75,5 +77,5 @@ export function DataProvider({ children }: React.PropsWithChildren) {
     fetchBarrios();
   }, []);
 
-  return <DataContext.Provider value={{ socios, barrios }}>{children}</DataContext.Provider>;
+  return <DataContext.Provider value={{ socios, fetchSocios, barrios }}>{children}</DataContext.Provider>;
 }
