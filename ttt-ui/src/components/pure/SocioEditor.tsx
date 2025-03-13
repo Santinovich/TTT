@@ -17,9 +17,16 @@ function TextData({
   setNewData?: React.Dispatch<React.SetStateAction<string>>;
   isBeingEdited?: boolean;
 }) {
-  if (!data) data = ""
+  if (!data) data = "";
   if (typeof data === "number") data = data.toString();
   const [inputValue, setInputValue] = useState(data);
+
+  useEffect(() => {
+    if (!data) data = ""
+    if (typeof data === "number") data = data.toString();
+    setInputValue(data);
+  }, [data])
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -78,7 +85,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
         nombre: newNombre,
         apellido: newApellido,
         numeroDni: parseInt(newNumeroDni) || null,
-        fechaNacimiento: new Date(newFechaNacimiento),
+        fechaNacimiento: newFechaNacimiento ? new Date(newFechaNacimiento) : null,
         ubicacion: null,
         contacto: null,
         isAfiliadoPj: false
@@ -95,13 +102,6 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
     setNewNumeroDni("");
     setNewFechaNacimiento("");
   }
-
-  const strNombre = (nombre: string, apellido?: string): string => {
-    if (apellido) {
-      return apellido + ", " + nombre;
-    }
-    return nombre;
-  };
 
   function EditorButton({
     icon,
@@ -127,17 +127,9 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
         ) : (
           <div className="data-container">
             <div className="data-group">
-              <TextData
-                title="Apellido y nombre"
-                data={strNombre(selectedSocio.nombre, selectedSocio.apellido)}
-                isBeingEdited={isBeingEdited}
-              />
-              <TextData
-                title={"DNI"}
-                data={selectedSocio.numeroDni}
-                setNewData={setNewNumeroDni}
-                isBeingEdited={isBeingEdited}
-              />
+              <TextData title="Nombre" data={selectedSocio.nombre} setNewData={setNewNombre} isBeingEdited={isBeingEdited}/>
+              <TextData title="Apellido" data={selectedSocio.apellido} setNewData={setNewApellido} isBeingEdited={isBeingEdited} />
+              <TextData title={"DNI"} data={selectedSocio.numeroDni} setNewData={setNewNumeroDni} isBeingEdited={isBeingEdited} />
               {selectedSocio.fechaNacimiento ? (
                 <TextData
                   title="Fecha de nacimiento"
