@@ -108,14 +108,6 @@ function Agregar() {
                 className="in-nacimiento"
               />
             </div>
-
-            {/* CAJA DE ARCHIVOS */}
-            <div className="file-upload">
-              <label className="file-label">
-                <input type="file" accept=".pdf,.jpg,.png" />
-                <p>📂 Cargar Archivo (.PDF, .JPG, .IMG)</p>
-              </label>
-            </div>
           </div>
         </div>
       )}

@@ -9,8 +9,8 @@
 .socios-list-side-panel {
     background-color: var(--background-contrast);
 
-    width: 20%;
-    
+    width: 300px;
+   
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -26,7 +26,10 @@
 /**/
 
 .socios-list {
+    box-sizing: border-box;
     width: 100%;
+    border: 1px solid var(--background-main);
+
 }
 
 .socios-list tr {
