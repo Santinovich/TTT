@@ -64,7 +64,12 @@
 }
 
 .socio-data > div {
-    font-size: 18px;
+    height: var(--input-height);
+
+    font-size: 14px;
+
+    display: flex;
+    align-items: center;
 }
 
 .socio-editor .socio-data h3 {

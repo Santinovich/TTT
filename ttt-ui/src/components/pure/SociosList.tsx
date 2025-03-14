@@ -8,13 +8,14 @@ export interface SelectedSocio {
   selectedSocio: Socio | undefined;
   setSelectedSocio: Dispatch<React.SetStateAction<Socio | undefined>>;
 }
+type PjFilterType = "todos" | "afiliado" | "no-afiliado"; 
 
 function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
   const dataContext = useContext(DataContext);
 
   const [barrioSearch, setBarrioSearch] = useState<string>("");
   const [barriosIdFilters, setBarriosIdFilters] = useState<number[]>([]);
-  const [isAfiliadoPjFilter, setIsAfiliadoPjFilter] = useState<boolean>(false);
+  const [isAfiliadoPjFilter, setIsAfiliadoPjFilter] = useState<PjFilterType>("todos");
 
 
   const handleBarrioSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,12 +45,16 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
           ? true
           : barriosIdFilters.includes(s.ubicacion?.barrio?.id ?? -1);
       })
-      .filter((s) => isAfiliadoPjFilter ? s.isAfiliadoPj : true);
+      .filter((s) => {
+        if (isAfiliadoPjFilter === "todos") return true;
+        if (isAfiliadoPjFilter === "afiliado") return s.isAfiliadoPj;
+        if (isAfiliadoPjFilter === "no-afiliado") return !s.isAfiliadoPj;
+      });
       return filteredSocios;
     }
 
-    const BarriosListSelector = () => {
-      if (barrioSearch) {
+    function BarriosListSelector () {
+      if (barrioSearch && dataContext) {
         const elements = dataContext.barrios
           .filter((b) => {
             return !barriosIdFilters.includes(b.id);
@@ -77,42 +82,65 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
       }
     };
 
+    function BarriosFilter() {
+      return (
+        <div className="barrios-filter">
+          <input
+            type="text"
+            placeholder="Barrios"
+            value={barrioSearch}
+            onChange={handleBarrioSearch}
+          />
+          <BarriosListSelector />
+          <div>
+            {barriosIdFilters.map((id) => {
+              const b = dataContext?.barrios.find((b) => b.id === id);
+              if (b) {
+                return (
+                  <div
+                    key={id}
+                    className="filter selected"
+                    onClick={() => deleteBarrioFilter(b.id)}
+                  >
+                    <span>{b.nombre}</span>
+                  </div>
+                );
+              } else {
+                return null;
+              }
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    function PjFilter() {
+      const handlePjFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value as PjFilterType;
+
+        console.log(value)
+        setIsAfiliadoPjFilter(value)
+      }
+
+      return (
+        <div className="pj-filter">
+          <select value={isAfiliadoPjFilter} onChange={handlePjFilterChange}>
+            <option value={"todos"}>Afiliados y no afiliados</option>
+            <option value={"afiliado"}>Afiliados al PJ</option>
+            <option value={"no-afiliado"}>No afiliados al PJ</option>
+
+          </select>
+        </div>
+      );
+    }
+
     return (
       <div className="socios-list-container">
         <div className="socios-list-side-panel">
           <div className="filters">
             <h3>Filtros</h3>
-            <div className="barrios-filters">
-              <input
-                type="text"
-                placeholder="Barrios"
-                value={barrioSearch}
-                onChange={handleBarrioSearch}
-              />
-              <BarriosListSelector />
-              <div>
-                {barriosIdFilters.map((id) => {
-                  const b = dataContext.barrios.find((b) => b.id === id);
-                  if (b) {
-                    return (
-                      <div
-                        key={id}
-                        className="filter selected"
-                        onClick={() => deleteBarrioFilter(b.id)}
-                      >
-                        <span>{b.nombre}</span>
-                      </div>
-                    );
-                  } else {
-                    return null;
-                  }
-                })}
-              </div>
-            </div>
-            <div className="pj-filter">
-              <input type="checkbox" name="afiliado-pj-filter" checked={isAfiliadoPjFilter} onChange={() => setIsAfiliadoPjFilter(!isAfiliadoPjFilter)} />
-              <span>Afiliado al PJ</span>
-            </div>
+            <BarriosFilter />
+            <PjFilter />
           </div>
         </div>
         <div className="col">

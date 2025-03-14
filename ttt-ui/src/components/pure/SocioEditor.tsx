@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAdd, faClose, faPencil, faSave } from "@fortawesome/free-solid-svg-icons";
 import { SelectedSocio } from "./SociosList";
-import { ChangeEventHandler, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Barrio, DataContext } from "../../context/DataContext";
 
@@ -251,9 +251,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
           correo: newEmail || undefined,
         };
       }
-      
-      toastContext?.addToast({text: "asdds"})
-
+    
       const newData = {
         nombre: newNombre || undefined,
         apellido: newApellido || undefined,

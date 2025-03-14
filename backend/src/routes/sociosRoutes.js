@@ -1,7 +1,7 @@
 const express = require("express");
 const sociosRouter = express.Router();
 
-const db = require("../db");
+const db = require("../db/db");
 
 const SociosService = require("../service/SociosService");
 const UbicacionService = require("../service/UbicacionService");

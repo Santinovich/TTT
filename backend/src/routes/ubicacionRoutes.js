@@ -2,7 +2,7 @@ const express = require("express");
 const ubicacionRouter = express.Router();
 const UbicacionService = require("../service/UbicacionService");
 
-const db = require("../db");
+const db = require("../db/db");
 
 const ubicacionService = new UbicacionService(db);
 

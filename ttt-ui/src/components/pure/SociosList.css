@@ -7,7 +7,11 @@
 /**/
 
 .socios-list-side-panel {
+    box-sizing: border-box;
+
     background-color: var(--background-contrast);
+    border: 1px solid var(--background-main);
+
 
     width: 300px;
    
@@ -28,8 +32,6 @@
 .socios-list {
     box-sizing: border-box;
     width: 100%;
-    border: 1px solid var(--background-main);
-
 }
 
 .socios-list tr {
@@ -77,7 +79,7 @@
     font-weight: bold;
 }
 
-.barrios-filters div {
+.barrios-filter div {
     margin-top: .25rem;
     display: flex;
     flex-wrap: wrap;

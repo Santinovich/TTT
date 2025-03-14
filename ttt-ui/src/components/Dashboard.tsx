@@ -1,13 +1,13 @@
 import Header from "./pure/Header";
 import SociosList from "./pure/SociosList";
 import "./Dashboard.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Socio } from "../context/DataContext";
 
 function Dashboard() {
 
     const [selectedSocio, setSelectedSocio] = useState<Socio>()
-    
+
     return (
         <>
             <Header />
