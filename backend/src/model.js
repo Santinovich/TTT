@@ -7,9 +7,8 @@ class Barrio {
 }
 
 class Ubicacion {
-  #id
   constructor(id, domicilio, idSocio, barrio) {
-    this.#id = id;
+    this.id = id;
     this.domicilio = domicilio;
     this.idSocio = idSocio;
     this.barrio = barrio;
@@ -17,9 +16,8 @@ class Ubicacion {
 }
 
 class Contacto {
-  #id;
   constructor(id, telefono, correo, idSocio) {
-    this.#id = id;
+    this.id = id;
     this.telefono = telefono;
     this.correo = correo;
     this.idSocio = idSocio;

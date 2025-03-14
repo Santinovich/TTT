@@ -19,7 +19,7 @@ body,
     min-height: 100vh;
 }
 
-input {
+input, select {
     background-color: rgba(255, 255, 255, 0.13);
     color: #fff;
     border: 0px;
@@ -35,6 +35,10 @@ input {
 input[type="checkbox"] {
     width: 32px;
     height: 32px;
+}
+
+select option {
+    background-color:var(--background-main)
 }
 
 button {

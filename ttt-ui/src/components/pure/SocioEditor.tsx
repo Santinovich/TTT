@@ -143,6 +143,46 @@ function BooleanData({
   );
 }
 
+function BarrioData({
+  title,
+  value,
+  setNewValue,
+  isBeingEdited = false,
+}: {
+  title: string;
+  value: Barrio | undefined;
+  setNewValue: React.Dispatch<React.SetStateAction<Barrio | undefined>>;
+  isBeingEdited?: boolean;
+}) {
+  const dataContext = useContext(DataContext);
+
+  return (
+    <div className="socio-data">
+      <span className="info-text">{title}</span>
+      <div>
+        {isBeingEdited && dataContext ? (
+          <select
+            defaultValue={value?.id}
+            onChange={(e) =>
+              setNewValue(dataContext.barrios.find((b) => b.id === parseInt(e.target.value)))
+            }
+          >
+            {dataContext.barrios.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.nombre}
+              </option>
+            ))}
+          </select>
+        ) : value ? (
+          <span>{value.nombre}</span>
+        ) : (
+          <span className="info-text">Sin datos</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 
 export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) {
 
@@ -157,8 +197,8 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
   const [newFechaNacimiento, setNewFechaNacimiento] = useState<string>("");
   const [newIsAfiliadoPj, setNewIsAfiliadoPj] = useState<boolean | undefined>(undefined);
 
-  const [newDomicilio, setDomicilio] = useState<string>("");
-  const [newBarrio, setBarrio] = useState<Barrio | undefined>(undefined);
+  const [newDomicilio, setNewDomicilio] = useState<string>("");
+  const [newBarrio, setNewBarrio] = useState<Barrio | undefined>(undefined);
 
   const [newEmail, setEmail] = useState<string>("");
   const [newTelefono, setTelefono] = useState<string>("");
@@ -168,7 +208,8 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
       setNewNombre("");
       setNewNumeroDni("");
       setNewFechaNacimiento("");
-      setDomicilio("");
+      setNewBarrio(undefined)
+      setNewDomicilio("");
   }, [selectedSocio]);
 
   useEffect(() => {
@@ -182,12 +223,10 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
       let newContacto = undefined;
 
       if (newDomicilio || newBarrio) {
-        if (selectedSocio.ubicacion) {
-          newUbicacion = {
-            domicilio: newDomicilio || selectedSocio.ubicacion.domicilio,
-            barrio: newBarrio || selectedSocio.ubicacion.barrio,
-          };
-        }
+        newUbicacion = {
+          domicilio: newDomicilio || selectedSocio.ubicacion?.domicilio,
+          barrio: newBarrio || selectedSocio.ubicacion?.barrio,
+        };
       }
       
       const nacimDate = newFechaNacimiento ? new Date(newFechaNacimiento) : undefined;
@@ -199,9 +238,11 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
         numeroDni: parseInt(newNumeroDni) || undefined,
         fechaNacimiento: nacimientoDateStr,
         isAfiliadoPj: newIsAfiliadoPj === undefined ? selectedSocio.isAfiliadoPj : newIsAfiliadoPj,
-
         ubicacion: newUbicacion
       };
+
+      console.log(newData)
+
       const response = await fetch("/api/v1/socios/" + selectedSocio.id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -252,34 +293,10 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
               <DateData title="Fecha de nacimiento" data={selectedSocio.fechaNacimiento || undefined} setNewData={setNewFechaNacimiento} isBeingEdited={isBeingEdited} />
             </div>
             <div className="data-group">
-              <TextData
-                title="Domicilio"
-                data={selectedSocio.ubicacion?.domicilio}
-                setNewData={setDomicilio}
-                isBeingEdited={isBeingEdited}
-              />
-              {/* <TextData
-                title={"Barrio"}
-                data={
-                  selectedSocio.ubicacion?.barrio
-                    ? selectedSocio.ubicacion?.barrio?.nombre +
-                      ", comuna " +
-                      selectedSocio.ubicacion?.barrio?.comuna
-                    : undefined
-                }
-              /> */}
-              <TextData
-                title="Teléfono"
-                data={selectedSocio.contacto?.telefono}
-                setNewData={setTelefono}
-                isBeingEdited={isBeingEdited}
-              />
-              <TextData
-                title="Email"
-                data={selectedSocio.contacto?.correo}
-                setNewData={setEmail}
-                isBeingEdited={isBeingEdited}
-              />
+              <TextData title="Domicilio" data={selectedSocio.ubicacion?.domicilio} setNewData={setNewDomicilio} isBeingEdited={isBeingEdited} />
+              <BarrioData title={"Barrio"} value={selectedSocio.ubicacion?.barrio ? selectedSocio.ubicacion?.barrio : undefined} setNewValue={setNewBarrio} isBeingEdited={isBeingEdited} />
+              <TextData title="Teléfono" data={selectedSocio.contacto?.telefono} setNewData={setTelefono} isBeingEdited={isBeingEdited} />
+              <TextData title="Email" data={selectedSocio.contacto?.correo} setNewData={setEmail} isBeingEdited={isBeingEdited}/>
             </div>
             <div className="data-group">
               <BooleanData title="Afiliado PJ" value={selectedSocio.isAfiliadoPj} setNewValue={setNewIsAfiliadoPj} isBeingEdited={isBeingEdited} />

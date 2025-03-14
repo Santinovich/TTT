@@ -72,11 +72,34 @@ class UbicacionService {
       this.database.run(
         "INSERT INTO ubicacion (id_socio, id_barrio, domicilio) VALUES (?, ?, ?)",
         [idSocio, idBarrio, domicilio],
-        async (error) => {
+        (error) => {
           if (error) reject(error);
           resolve();
         }
       );
+    });
+  }
+
+  updateUbicacion(idUbicacion, idSocio = null, idBarrio = null, domicilio = null) {
+    return new Promise((resolve, reject) => {
+      const data = {};
+      if (idSocio !== null) data.id_socio = idSocio;
+      if (idBarrio !== null) data.id_barrio = idBarrio;
+      if (domicilio !== null) data.domicilio = domicilio;
+
+      let sql = `UPDATE ubicacion SET `;
+      sql += Object.keys(data)
+        .map((key) => `${key} = ?`)
+        .join(", ");
+      sql += " WHERE id = ?";
+
+      console.log(data)
+      console.log(sql)
+
+      this.database.run(sql, [...Object.values(data), idUbicacion], (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
     });
   }
 }

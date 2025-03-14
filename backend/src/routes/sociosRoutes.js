@@ -2,9 +2,12 @@ const express = require("express");
 const sociosRouter = express.Router();
 
 const db = require("../db");
+
 const SociosService = require("../service/SociosService");
+const UbicacionService = require("../service/UbicacionService");
 
 const sociosService = new SociosService(db);
+const ubicacionService = new UbicacionService(db);
 
 //TODO: ver router.all para middlewares
 sociosRouter.get("/:id?", async (req, res) => {
@@ -44,20 +47,42 @@ sociosRouter.post("/", async (req, res) => {
 });
 
 sociosRouter.put("/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
-  if (!id) return res.status(400).json({ error: "El id es obligatorio" });
+  const idSocio = parseInt(req.params.id);
+  if (!idSocio) return res.status(400).json({ error: "El id es obligatorio" });
 
-  const updateProperties = {};
-  req.body?.nombre ? (updateProperties.nombre = req.body.nombre) : null;
-  req.body?.apellido ? (updateProperties.apellido = req.body.apellido) : null;
-  req.body?.fechaNacimiento ? (updateProperties.fechaNacimiento = req.body.fechaNacimiento) : null;
-  req.body?.numeroDni ? (updateProperties.numeroDni = req.body.numeroDni) : null;
-  req.body?.isAfiliadoPj !== undefined ? (updateProperties.isAfiliadoPj = req.body.isAfiliadoPj) : null;
+  const newSocioData = {};
+  req.body?.nombre ? (newSocioData.nombre = req.body.nombre) : null;
+  req.body?.apellido ? (newSocioData.apellido = req.body.apellido) : null;
+  req.body?.fechaNacimiento ? (newSocioData.fechaNacimiento = req.body.fechaNacimiento) : null;
+  req.body?.numeroDni ? (newSocioData.numeroDni = req.body.numeroDni) : null;
+  req.body?.isAfiliadoPj !== undefined ? (newSocioData.isAfiliadoPj = req.body.isAfiliadoPj) : null;
 
   try {
-    sociosService.updateSocio(id, updateProperties);
+    db.run("BEGIN TRANSACTION");
+
+    await sociosService.updateSocio(idSocio, newSocioData);
+
+    const newUbicacionData = req.body?.ubicacion ? req.body.ubicacion : null;
+    if (newUbicacionData) {
+      const newDomicilio = newUbicacionData.domicilio;
+      const newBarrioId = newUbicacionData.barrio?.id;
+
+      const ubicacionSocio = await ubicacionService.getUbicacion(idSocio);
+      if (ubicacionSocio) {
+        await ubicacionService.updateUbicacion(
+          ubicacionSocio.id,
+          null,
+          newBarrioId,
+          newDomicilio
+        );
+      } else {
+        await ubicacionService.createUbicacion(idSocio, newBarrioId, newDomicilio);
+      }
+    }
+
     res.json({ message: "Socio actualizado exitosamente" });
   } catch (error) {
+    db.run("ROLLBACK");
     console.error(error);
     res.status(500).json({ error: "Error al actualizar el socio: " + error });
   }

@@ -1,5 +1,5 @@
 const { Database } = require("sqlite3");
-const { Socio, Jubilacion, Jubilado } = require("../model");
+const { Socio, Jubilacion, Ubicacion, Jubilado } = require("../model");
 const UbicacionService = require("./UbicacionService");
 const ContactoService = require("./ContactoService");
 
@@ -121,22 +121,32 @@ class SociosService {
 
   /**
    * @param {number} id
-   * @param {{nombre: string | null | undefined, apellido: string | null | undefined, fechaNacimiento: Date | null | undefined, numeroDni: number | null  | undefined}} socioData
+   * @param {{nombre: string | null | undefined, apellido: string | null | undefined, fechaNacimiento: Date | null | undefined, numeroDni: number | null  | undefined, ubicacion: Ubicacion}} socioData
    */
-  updateSocio(id, socioData) {
+  updateSocio(idSocio, newSocioData) {
     return new Promise(async (resolve, reject) => {
-      const socio = await this.getSocioById(id);
+      const socio = await this.getSocioById(idSocio);
       if (!socio) return reject("Socio no encontrado");
 
       let sql = "UPDATE socio SET ";
-      const keys = Object.keys(socioData).map((k) => this.renameKey(k));
-      if (keys.length === 0) return;
+      const keys = Object.keys(newSocioData).map((k) => this.renameKey(k));
+      if (keys.length === 0) return;  
       sql += keys.map((key) => `${key} = ?`).join(", ");
       sql += " WHERE id = ?";
-      this.database.run(sql, [...Object.values(socioData), id], async (error) => {
-        if (error) return reject(error);
-        resolve(await this.getSocioById(id));
-      });
+
+      try {
+        this.database.run(sql, [...Object.values(newSocioData), idSocio], async (error) => {
+          if (error) {
+            this.database.run("ROLLBACK");
+            return reject(error);
+          }
+        });
+      } catch (error) {
+        console.error(error);
+      }
+
+      this.database.run("COMMIT");
+      resolve(await this.getSocioById(idSocio));
     });
   }
 
