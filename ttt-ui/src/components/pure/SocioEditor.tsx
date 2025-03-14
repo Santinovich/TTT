@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAdd, faClose, faPencil, faSave } from "@fortawesome/free-solid-svg-icons";
 import { SelectedSocio } from "./SociosList";
-import { useContext, useEffect, useState } from "react";
+import { ChangeEventHandler, useContext, useEffect, useState } from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Barrio, DataContext } from "../../context/DataContext";
 
@@ -10,7 +10,8 @@ import { CreateSocio } from "./CreateSocio";
 import { ToastContext } from "../../context/ToastContext";
 
 const dateToSQLiteString = (date: Date): string => {
-  const dateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} 00:00:00`
+  const dateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+  console.log(dateStr)
   return dateStr
 }
 
@@ -81,6 +82,7 @@ function DateData({
   }, [data])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("dentro del input", e.target.value)
     setInputValue(e.target.value);
     if (setNewData) {
       setNewData(e.target.value);
@@ -98,7 +100,7 @@ function DateData({
             onChange={handleInputChange}
           />
         ) : data ? (
-          <span>{data.toLocaleDateString()}</span>
+          <span>{data.toLocaleDateString("es-ES", { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
         ) : (
           <span className="no-data">Sin datos</span>
         )}
@@ -158,17 +160,26 @@ function BarrioData({
 }) {
   const dataContext = useContext(DataContext);
 
+  const [inputValue, setInputValue] = useState(value?.id || undefined);
+
+  useEffect(() => {
+    if (!value) return;
+    setInputValue(value.id);
+  }, [value]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setInputValue(parseInt(e.target.value));
+    setNewValue(dataContext?.barrios.find(b => b.id === parseInt(e.target.value)));
+    console.log(e.target.value)
+  };
+
   return (
     <div className="socio-data">
       <span className="info-text">{title}</span>
       <div>
         {isBeingEdited && dataContext ? (
-          <select
-            defaultValue={value?.id}
-            onChange={(e) =>
-              setNewValue(dataContext.barrios.find((b) => b.id === parseInt(e.target.value)))
-            }
-          >
+          <select value={inputValue} onChange={handleInputChange}>
+            <option key={-1} value={-1}></option>
             {dataContext.barrios.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.nombre}
@@ -212,6 +223,10 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
       setNewFechaNacimiento("");
       setNewBarrio(undefined)
       setNewDomicilio("");
+      setNewIsAfiliadoPj(undefined);
+      setEmail("");
+      setTelefono("");
+
   }, [selectedSocio]);
 
   useEffect(() => {
@@ -230,17 +245,23 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
           barrio: newBarrio || selectedSocio.ubicacion?.barrio,
         };
       }
+      if (newTelefono || newEmail) {
+        newContacto = {
+          telefono: parseInt(newTelefono) || undefined,
+          correo: newEmail || undefined,
+        };
+      }
       
-      const nacimDate = newFechaNacimiento ? new Date(newFechaNacimiento) : undefined;
-      const nacimientoDateStr = nacimDate ? dateToSQLiteString(nacimDate) : undefined;
+      toastContext?.addToast({text: "asdds"})
 
       const newData = {
         nombre: newNombre || undefined,
         apellido: newApellido || undefined,
         numeroDni: parseInt(newNumeroDni) || undefined,
-        fechaNacimiento: nacimientoDateStr,
+        fechaNacimiento: newFechaNacimiento ? newFechaNacimiento + "T03:00:00Z" : undefined,
         isAfiliadoPj: newIsAfiliadoPj === undefined ? selectedSocio.isAfiliadoPj : newIsAfiliadoPj,
-        ubicacion: newUbicacion
+        ubicacion: newUbicacion,
+        contacto: newContacto,
       };
 
       const response = await fetch("/api/v1/socios/" + selectedSocio.id, {

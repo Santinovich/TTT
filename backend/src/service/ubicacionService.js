@@ -80,7 +80,7 @@ class UbicacionService {
     });
   }
 
-  updateUbicacion(idUbicacion, idSocio = null, idBarrio = null, domicilio = null) {
+  updateUbicacion(idUbicacion, idBarrio = null, domicilio = null, idSocio = null) {
     return new Promise((resolve, reject) => {
       const data = {};
       if (idSocio !== null) data.id_socio = idSocio;
@@ -92,9 +92,6 @@ class UbicacionService {
         .map((key) => `${key} = ?`)
         .join(", ");
       sql += " WHERE id = ?";
-
-      console.log(data)
-      console.log(sql)
 
       this.database.run(sql, [...Object.values(data), idUbicacion], (error) => {
         if (error) return reject(error);

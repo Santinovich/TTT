@@ -1,7 +1,7 @@
 const { Database } = require("sqlite3");
 const { Socio, Jubilacion, Ubicacion, Jubilado } = require("../model");
 const UbicacionService = require("./UbicacionService");
-const ContactoService = require("./ContactoService");
+const ContactoService = require("./contactoService");
 
 class SociosService {
   /**
@@ -56,7 +56,7 @@ class SociosService {
                 row.id,
                 row.nombre,
                 row.apellido,
-                new Date(row.nacimiento),
+                row.nacimiento,
                 row.num_dni,
                 row.url_dni,
                 row.is_afiliado_pj ? true : false,
@@ -121,10 +121,13 @@ class SociosService {
 
   /**
    * @param {number} id
-   * @param {{nombre: string | null | undefined, apellido: string | null | undefined, fechaNacimiento: Date | null | undefined, numeroDni: number | null  | undefined, ubicacion: Ubicacion}} socioData
+   * @param {{nombre: string | null | undefined, apellido: string | null | undefined, fechaNacimiento: Date | null | undefined, numeroDni: number | null  | undefined, ubicacion: Ubicacion}} newSocioData
    */
   updateSocio(idSocio, newSocioData) {
     return new Promise(async (resolve, reject) => {
+      if (Object.keys(newSocioData).length === 0) {
+        resolve()
+      }
       const socio = await this.getSocioById(idSocio);
       if (!socio) return reject("Socio no encontrado");
 
@@ -134,18 +137,12 @@ class SociosService {
       sql += keys.map((key) => `${key} = ?`).join(", ");
       sql += " WHERE id = ?";
 
-      try {
-        this.database.run(sql, [...Object.values(newSocioData), idSocio], async (error) => {
-          if (error) {
-            this.database.run("ROLLBACK");
-            return reject(error);
-          }
-        });
-      } catch (error) {
-        console.error(error);
-      }
-
-      this.database.run("COMMIT");
+      this.database.run(sql, [...Object.values(newSocioData), idSocio], async (error) => {
+        if (error) {
+          return reject(error);
+        }
+      });
+      
       resolve(await this.getSocioById(idSocio));
     });
   }

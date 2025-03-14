@@ -57,10 +57,11 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = (await response.json()) as Socio[];
-      data.forEach(
-        (socio) =>
-          (socio.fechaNacimiento = socio.fechaNacimiento ? new Date(socio.fechaNacimiento) : null)
-      );
+      data.forEach((socio) => {
+        socio.fechaNacimiento = socio.fechaNacimiento
+          ? new Date(socio.fechaNacimiento)
+          : null;
+      });
       setSocios(data);
     } catch (error) {
       if (error instanceof Error) {

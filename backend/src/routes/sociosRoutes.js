@@ -5,9 +5,11 @@ const db = require("../db");
 
 const SociosService = require("../service/SociosService");
 const UbicacionService = require("../service/UbicacionService");
+const ContactoService = require("../service/contactoService");
 
 const sociosService = new SociosService(db);
 const ubicacionService = new UbicacionService(db);
+const contactoService = new ContactoService(db);
 
 //TODO: ver router.all para middlewares
 sociosRouter.get("/:id?", async (req, res) => {
@@ -62,24 +64,35 @@ sociosRouter.put("/:id", async (req, res) => {
 
     await sociosService.updateSocio(idSocio, newSocioData);
 
-    const newUbicacionData = req.body?.ubicacion ? req.body.ubicacion : null;
+    const newUbicacionData = req.body?.ubicacion || null;
     if (newUbicacionData) {
       const newDomicilio = newUbicacionData.domicilio;
       const newBarrioId = newUbicacionData.barrio?.id;
-
+      
       const ubicacionSocio = await ubicacionService.getUbicacion(idSocio);
       if (ubicacionSocio) {
         await ubicacionService.updateUbicacion(
-          ubicacionSocio.id,
-          null,
-          newBarrioId,
-          newDomicilio
+          ubicacionSocio.id, newBarrioId, newDomicilio
         );
       } else {
         await ubicacionService.createUbicacion(idSocio, newBarrioId, newDomicilio);
       }
     }
 
+    const newContactoData = req.body?.contacto || null;
+    if (newContactoData) {
+      const newTelefono = newContactoData.telefono;
+      const newCorreo = newContactoData.correo;
+
+      const contactoSocio = await contactoService.getContacto(idSocio);
+      if (contactoSocio) {
+        await contactoService.updateContacto(contactoSocio.id, newTelefono, newCorreo);
+      } else {
+        await contactoService.createContacto(idSocio, newTelefono, newCorreo);
+      }
+    }
+
+    db.run("COMMIT");
     res.json({ message: "Socio actualizado exitosamente" });
   } catch (error) {
     db.run("ROLLBACK");

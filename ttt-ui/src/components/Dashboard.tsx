@@ -7,11 +7,7 @@ import { Socio } from "../context/DataContext";
 function Dashboard() {
 
     const [selectedSocio, setSelectedSocio] = useState<Socio>()
-
-    useEffect(() => {
-        console.log(selectedSocio)
-    }, [selectedSocio])
-
+    
     return (
         <>
             <Header />
