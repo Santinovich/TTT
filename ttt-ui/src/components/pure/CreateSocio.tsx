@@ -1,9 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import "./CreateSocio.css";
-import {  DataContext } from "../context/DataContext";
+import { DataContext } from "../../context/DataContext";
+import { ToastContext } from "../../context/ToastContext";
 
 export function CreateSocio({visible = true, setIsVisible}: {visible?: boolean, setIsVisible: React.Dispatch<boolean>}) {
   const dataContext = useContext(DataContext);
+  const toastContext = useContext(ToastContext);
+  
   
   // Nuevos estados para los inputs adicionales
   const [nombre, setNombre] = useState("");
@@ -19,13 +22,20 @@ export function CreateSocio({visible = true, setIsVisible}: {visible?: boolean, 
     const response = await fetch("/api/v1/socios", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ nombre, apellido, numeroDni: dni, fechaNacimiento: nacimiento})
+      body: JSON.stringify({ nombre, apellido, numeroDni: dni, fechaNacimiento: nacimiento }),
     });
-
     if (response.ok) {
       dataContext?.fetchSocios();
+      const { message } = await response.json();
+      toastContext?.addToast({ text: message });
+    } else {
+      const { error } = await response.json();
+      toastContext?.addToast({
+        text: error || "Error desconocido al crear socio.",
+        type: "error",
+      });
     }
   };
 

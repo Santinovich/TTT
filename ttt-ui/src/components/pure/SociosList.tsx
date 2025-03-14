@@ -59,7 +59,6 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
             return b.nombre.match(regex) ? true : false;
           })
           .map((b) => {
-            console.log(b);
             return { key: b.id, value: b.nombre };
           });
 

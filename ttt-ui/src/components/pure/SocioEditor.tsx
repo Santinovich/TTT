@@ -3,13 +3,15 @@ import { faAdd, faClose, faPencil, faSave } from "@fortawesome/free-solid-svg-ic
 import { SelectedSocio } from "./SociosList";
 import { useContext, useEffect, useState } from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { Barrio, DataContext, Socio, Ubicacion } from "../../context/DataContext";
+import { Barrio, DataContext } from "../../context/DataContext";
 
 import "./SocioEditor.css";
-import { CreateSocio } from "../CreateSocio";
+import { CreateSocio } from "./CreateSocio";
+import { ToastContext } from "../../context/ToastContext";
 
 const dateToSQLiteString = (date: Date): string => {
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} 00:00:00`;
+  const dateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} 00:00:00`
+  return dateStr
 }
 
 function TextData({
@@ -185,11 +187,11 @@ function BarrioData({
 
 
 export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) {
-
-  const dataContext = useContext(DataContext)
+  const dataContext = useContext(DataContext);
+  const toastContext = useContext(ToastContext);
 
   const [isBeingEdited, setIsBeingEdited] = useState<boolean>(false);
-  const [isCreateSocioVisible, setCreateSocioVisible] = useState<boolean>(false)
+  const [isCreateSocioVisible, setCreateSocioVisible] = useState<boolean>(false);
 
   const [newApellido, setNewApellido] = useState<string>("");
   const [newNombre, setNewNombre] = useState<string>("");
@@ -230,7 +232,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
       }
       
       const nacimDate = newFechaNacimiento ? new Date(newFechaNacimiento) : undefined;
-      const nacimientoDateStr = nacimDate ? `${nacimDate.getFullYear()}-${nacimDate.getMonth()+1}-${nacimDate.getDate()} 00:00:00` : undefined;
+      const nacimientoDateStr = nacimDate ? dateToSQLiteString(nacimDate) : undefined;
 
       const newData = {
         nombre: newNombre || undefined,
@@ -241,8 +243,6 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
         ubicacion: newUbicacion
       };
 
-      console.log(newData)
-
       const response = await fetch("/api/v1/socios/" + selectedSocio.id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -250,6 +250,11 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
       });
       if (response.ok) {
         dataContext?.fetchSocios();
+        const {message} = await response.json();
+        toastContext?.addToast({text: message});
+      } else {
+        const {error} = await response.json();
+        toastContext?.addToast({text: error || "Error desconocido al actualizar socio.", type: "error"});
       }
     }
   };

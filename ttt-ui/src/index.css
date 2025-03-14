@@ -1,10 +1,13 @@
 :root {
     --background-main: rgb(29, 27, 30);
     --background-contrast: rgb(37, 38, 41);
+    --background-highlight: rgb(47, 49, 56);
 
     --font-primary: #f8f8f8;
     --font-light: #f8f8f88b;
-    --primary-color: rgb(215, 120, 52);
+    --primary-color: #15367b;
+
+    --shadow1: 10px 10px 20px rgba(0, 0, 0, 0.5);
 
     background-color: var(--background-main);
     color: var(--font-primary);
