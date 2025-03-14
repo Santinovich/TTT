@@ -1,10 +1,15 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faPencil, faSave } from "@fortawesome/free-solid-svg-icons";
 import { SelectedSocio } from "./SociosList";
-import "./SocioEditor.css";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { Barrio, Socio } from "../../context/DataContext";
+import { Barrio, DataContext, Socio, Ubicacion } from "../../context/DataContext";
+
+import "./SocioEditor.css";
+
+const dateToSQLiteString = (date: Date): string => {
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} 00:00:00`;
+}
 
 function TextData({
   title,
@@ -55,7 +60,54 @@ function TextData({
   );
 }
 
+function DateData({
+  title,
+  data,
+  setNewData,
+  isBeingEdited = false,
+}: {
+  title: string;
+  data: Date | undefined;
+  setNewData?: React.Dispatch<React.SetStateAction<string>>;
+  isBeingEdited?: boolean;
+}) {
+  const [inputValue, setInputValue] = useState(data ? dateToSQLiteString(data) : "");
+
+  useEffect(() => {
+    setInputValue(data ? dateToSQLiteString(data): "");
+  }, [data])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    if (setNewData) {
+      setNewData(e.target.value);
+    }
+  };
+
+  return (
+    <div className="socio-data">
+      <span className="info-text">{title}</span>
+      <div>
+        {isBeingEdited ? (
+          <input
+            type="date"
+            value={inputValue}
+            onChange={handleInputChange}
+          />
+        ) : data ? (
+          <span>{data.toLocaleDateString()}</span>
+        ) : (
+          <span className="no-data">Sin datos</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) {
+
+  const dataContext = useContext(DataContext)
+
   const [isBeingEdited, setIsBeingEdited] = useState<boolean>(false);
 
   const [newApellido, setNewApellido] = useState<string>("");
@@ -77,20 +129,43 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
       setDomicilio("");
   }, [selectedSocio]);
 
-  const handlePostNewData = () => {
+  useEffect(() => {
+    setSelectedSocio(dataContext?.getSocio(selectedSocio ? selectedSocio.id : -1));
+  }, [dataContext?.socios])
+
+  const handlePostNewData = async () => {
     setIsBeingEdited(false);
     if (selectedSocio) {
-      const newSocio: Socio = {
-        id: selectedSocio.id,
-        nombre: newNombre,
-        apellido: newApellido,
-        numeroDni: parseInt(newNumeroDni) || null,
-        fechaNacimiento: newFechaNacimiento ? new Date(newFechaNacimiento) : null,
-        ubicacion: null,
-        contacto: null,
-        isAfiliadoPj: false
+      let newUbicacion = undefined;
+      let newContacto = undefined;
+
+      if (newDomicilio || newBarrio) {
+        if (selectedSocio.ubicacion) {
+          newUbicacion = {
+            domicilio: newDomicilio || selectedSocio.ubicacion.domicilio,
+            barrio: newBarrio || selectedSocio.ubicacion.barrio,
+          };
+        }
+      }
+      
+      const nacimDate = newFechaNacimiento ? new Date(newFechaNacimiento) : undefined;
+      const nacimientoDateStr = nacimDate ? `${nacimDate.getFullYear()}-${nacimDate.getMonth()+1}-${nacimDate.getDate()} 00:00:00` : undefined;
+
+      const newData = {
+        nombre: newNombre || undefined,
+        apellido: newApellido || undefined,
+        numeroDni: parseInt(newNumeroDni) || undefined,
+        fechaNacimiento: nacimientoDateStr,
+        ubicacion: newUbicacion
       };
-      console.log(newSocio)
+      const response = await fetch("/api/v1/socios/" + selectedSocio.id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newData),
+      });
+      if (response.ok) {
+        dataContext?.fetchSocios();
+      }
     }
   };
 
@@ -129,16 +204,8 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
             <div className="data-group">
               <TextData title="Nombre" data={selectedSocio.nombre} setNewData={setNewNombre} isBeingEdited={isBeingEdited}/>
               <TextData title="Apellido" data={selectedSocio.apellido} setNewData={setNewApellido} isBeingEdited={isBeingEdited} />
-              <TextData title={"DNI"} data={selectedSocio.numeroDni} setNewData={setNewNumeroDni} isBeingEdited={isBeingEdited} />
-              {selectedSocio.fechaNacimiento ? (
-                <TextData
-                  title="Fecha de nacimiento"
-                  data={`${selectedSocio.fechaNacimiento.getDate()} / ${
-                    selectedSocio.fechaNacimiento.getMonth() + 1
-                  } / ${selectedSocio.fechaNacimiento.getFullYear()}`}
-                  isBeingEdited={isBeingEdited}
-                />
-              ) : null}
+              <TextData title="DNI" data={selectedSocio.numeroDni} setNewData={setNewNumeroDni} isBeingEdited={isBeingEdited} />
+              <DateData title="Fecha de nacimiento" data={selectedSocio.fechaNacimiento || undefined} setNewData={setNewFechaNacimiento} isBeingEdited={isBeingEdited} />
             </div>
             <div className="data-group">
               <TextData

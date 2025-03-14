@@ -160,6 +160,7 @@ class SociosService {
   renameKey(str) {
     if (str === "fechaNacimiento") return "nacimiento";
     if (str === "numeroDni") return "num_dni";
+    if (str === "isAfiliadoPj") return "is_afiliado_pj";
     return str;
   }
 }

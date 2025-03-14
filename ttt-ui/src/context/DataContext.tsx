@@ -32,8 +32,9 @@ export interface Socio {
 
 interface DataContextType {
   socios: Socio[];
-  fetchSocios: () => Promise<void>;
   barrios: Barrio[];
+  getSocio: (id: number) => Socio | undefined;
+  fetchSocios: () => Promise<void>;
 }
 
 export const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -72,10 +73,15 @@ export function DataProvider({ children }: React.PropsWithChildren) {
     }
   };
 
+  const getSocio = (id: number) => {
+    return socios.find((socio) => socio.id === id);
+  };
+
+
   useEffect(() => {
     fetchSocios();
     fetchBarrios();
   }, []);
 
-  return <DataContext.Provider value={{ socios, fetchSocios, barrios }}>{children}</DataContext.Provider>;
+  return <DataContext.Provider value={{ socios, barrios, fetchSocios, getSocio }}>{children}</DataContext.Provider>;
 }
