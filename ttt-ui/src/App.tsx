@@ -5,12 +5,12 @@ import { ToastProvider } from "./context/ToastContext";
 
 function App() {
   return (
-    <DataProvider>
-      <ToastProvider>
+    <ToastProvider>
+      <DataProvider>
         <Dashboard />
         <ToastContainer />
-      </ToastProvider>
-    </DataProvider>
+      </DataProvider>
+    </ToastProvider>
   );
 }
 

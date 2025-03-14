@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { ToastContext } from "./ToastContext";
 
 export interface Barrio {
   id: number;
@@ -40,12 +41,18 @@ interface DataContextType {
 export const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export function DataProvider({ children }: React.PropsWithChildren) {
+  const toastContext = useContext(ToastContext);
+
   const [socios, setSocios] = useState([] as Socio[]);
   const [barrios, setBarrios] = useState([] as Barrio[]);
 
   const fetchSocios = async () => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
     try {
-      const response = await fetch("/api/v1/socios");
+      const response = await fetch("/api/v1/socios", { signal });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -56,7 +63,12 @@ export function DataProvider({ children }: React.PropsWithChildren) {
       );
       setSocios(data);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        toastContext?.addToast({ text: "No se pudo conectar al servidor para obtener los socios.", type: "error" });
+        console.error(error);
+      }
+    } finally {
+      clearTimeout(timeoutId);
     }
   };
 
