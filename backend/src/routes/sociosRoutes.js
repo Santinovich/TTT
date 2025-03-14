@@ -52,7 +52,7 @@ sociosRouter.put("/:id", async (req, res) => {
   req.body?.apellido ? (updateProperties.apellido = req.body.apellido) : null;
   req.body?.fechaNacimiento ? (updateProperties.fechaNacimiento = req.body.fechaNacimiento) : null;
   req.body?.numeroDni ? (updateProperties.numeroDni = req.body.numeroDni) : null;
-  req.body?.isAfiliadoPj ? (updateProperties.isAfiliadoPj = req.body.isAfiliadoPj) : null;
+  req.body?.isAfiliadoPj !== undefined ? (updateProperties.isAfiliadoPj = req.body.isAfiliadoPj) : null;
 
   try {
     sociosService.updateSocio(id, updateProperties);

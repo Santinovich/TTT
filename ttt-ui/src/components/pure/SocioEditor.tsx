@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faPencil, faSave } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faClose, faPencil, faSave } from "@fortawesome/free-solid-svg-icons";
 import { SelectedSocio } from "./SociosList";
 import { useContext, useEffect, useState } from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Barrio, DataContext, Socio, Ubicacion } from "../../context/DataContext";
 
 import "./SocioEditor.css";
+import { CreateSocio } from "../CreateSocio";
 
 const dateToSQLiteString = (date: Date): string => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} 00:00:00`;
@@ -104,16 +105,57 @@ function DateData({
   );
 }
 
+function BooleanData({
+  title,
+  value,
+  setNewValue,
+  isBeingEdited = false,
+}: {
+  title: string;
+  value: boolean;
+  setNewValue?: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  isBeingEdited?: boolean;
+}) {
+  const [inputValue, setInputValue] = useState(value);
+
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.checked);
+    if (setNewValue) {
+      setNewValue(e.target.checked);
+    }
+  };
+
+  return (
+    <div className="socio-data">
+      <span className="info-text">{title}</span>
+      <div>
+        {isBeingEdited ? (
+          <input type="checkbox" checked={inputValue} onChange={handleInputChange} />
+        ) : (
+          <span>{value ? "Sí" : "No"} </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) {
 
   const dataContext = useContext(DataContext)
 
   const [isBeingEdited, setIsBeingEdited] = useState<boolean>(false);
+  const [isCreateSocioVisible, setCreateSocioVisible] = useState<boolean>(false)
 
   const [newApellido, setNewApellido] = useState<string>("");
   const [newNombre, setNewNombre] = useState<string>("");
   const [newNumeroDni, setNewNumeroDni] = useState<string>("");
   const [newFechaNacimiento, setNewFechaNacimiento] = useState<string>("");
+  const [newIsAfiliadoPj, setNewIsAfiliadoPj] = useState<boolean | undefined>(undefined);
 
   const [newDomicilio, setDomicilio] = useState<string>("");
   const [newBarrio, setBarrio] = useState<Barrio | undefined>(undefined);
@@ -156,6 +198,8 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
         apellido: newApellido || undefined,
         numeroDni: parseInt(newNumeroDni) || undefined,
         fechaNacimiento: nacimientoDateStr,
+        isAfiliadoPj: newIsAfiliadoPj === undefined ? selectedSocio.isAfiliadoPj : newIsAfiliadoPj,
+
         ubicacion: newUbicacion
       };
       const response = await fetch("/api/v1/socios/" + selectedSocio.id, {
@@ -238,8 +282,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
               />
             </div>
             <div className="data-group">
-              <span className="info-text">Información miscelánea</span>
-              {selectedSocio.isAfiliadoPj ? <h3>Afiliado al Partido Justicialista</h3> : null}
+              <BooleanData title="Afiliado PJ" value={selectedSocio.isAfiliadoPj} setNewValue={setNewIsAfiliadoPj} isBeingEdited={isBeingEdited} />
               <div className="file-upload">
                 <label className="file-label">
                   <input type="file" accept=".pdf,.jpg,.png" />
@@ -250,6 +293,8 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
           </div>
         )}
       </div>
+
+      <CreateSocio visible={isCreateSocioVisible} setIsVisible={setCreateSocioVisible}/>
 
       <div className="editor-buttons">
         <EditorButton icon={faClose} onClick={handleCloseSocio} visible={!!selectedSocio} />
@@ -263,6 +308,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
           onClick={handlePostNewData}
           visible={!!selectedSocio && isBeingEdited}
         />
+        <EditorButton icon={faAdd} onClick={() => setCreateSocioVisible(!isCreateSocioVisible)} visible={true} />
       </div>
     </div>
   );

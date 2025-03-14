@@ -54,8 +54,16 @@
 
 }
 
+.socio-data {
+    padding-top: 1.5rem;
+    padding-bottom: .5rem;
+    margin-right: 2rem;
+    text-align: start;
+    border-bottom: 1px solid var(--background-main);
+
+}
+
 .socio-data > div {
-    margin-bottom: 2rem;
     font-size: 18px;
 }
 

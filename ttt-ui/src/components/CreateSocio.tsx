@@ -1,11 +1,9 @@
-import { useContext, useState } from "react";
-import "./AgregarSocio.css";
+import { useContext, useEffect, useState } from "react";
+import "./CreateSocio.css";
 import {  DataContext } from "../context/DataContext";
 
-function Agregar() {
+export function CreateSocio({visible = true, setIsVisible}: {visible?: boolean, setIsVisible: React.Dispatch<boolean>}) {
   const dataContext = useContext(DataContext);
-
-  const [isOpen, setIsOpen] = useState(false);
   
   // Nuevos estados para los inputs adicionales
   const [nombre, setNombre] = useState("");
@@ -13,9 +11,9 @@ function Agregar() {
   const [dni, setDni] = useState("");
   const [nacimiento, setNacimiento] = useState(""); 
 
-  const toggleVentana = () => {
-    setIsOpen(!isOpen);
-  };
+  useEffect(() => {
+    setIsVisible(visible);
+  }, [visible])
 
   const handleCreateSocio = async () => {
     const response = await fetch("/api/v1/socios", {
@@ -41,12 +39,8 @@ function Agregar() {
 
   return (
     <div className="Agregar">
-      <button className="boton" onClick={toggleVentana}>
-        {isOpen ? "Cerrar Socio" : "Agregar Socio"}
-      </button>
-
-      {isOpen && (
-        <div className="modal-overlay" onClick={toggleVentana}>
+      {visible && (
+        <div className="modal-overlay" onClick={() => setIsVisible(false)}>
           <div
             className="modal-content left-half"
             onClick={(e) => e.stopPropagation()} // Para evitar cerrar el modal al hacer clic dentro
@@ -114,5 +108,3 @@ function Agregar() {
     </div>
   );
 }
-
-export default Agregar;

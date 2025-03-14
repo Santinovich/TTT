@@ -14,6 +14,8 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
 
   const [barrioSearch, setBarrioSearch] = useState<string>("");
   const [barriosIdFilters, setBarriosIdFilters] = useState<number[]>([]);
+  const [isAfiliadoPjFilter, setIsAfiliadoPjFilter] = useState<boolean>(false);
+
 
   const handleBarrioSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBarrioSearch(event.target.value);
@@ -36,11 +38,13 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
 
   if (dataContext !== undefined) {
     const getFilteredSocios = (): Socio[] => {
-      if (barriosIdFilters.length === 0) {
-        return dataContext.socios
-      }
-      const filteredSocios: Socio[] = dataContext.socios.filter(s => barriosIdFilters.includes(s.ubicacion?.barrio?.id ?? -1))
-      console.log(filteredSocios)
+      const filteredSocios = dataContext.socios
+      .filter((s) => {
+        return barriosIdFilters.length === 0
+          ? true
+          : barriosIdFilters.includes(s.ubicacion?.barrio?.id ?? -1);
+      })
+      .filter((s) => isAfiliadoPjFilter ? s.isAfiliadoPj : true);
       return filteredSocios;
     }
 
@@ -77,7 +81,7 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
     return (
       <div className="socios-list-container">
         <div className="socios-list-side-panel">
-          <div>
+          <div className="filters">
             <h3>Filtros</h3>
             <div className="barrios-filters">
               <input
@@ -105,6 +109,10 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
                   }
                 })}
               </div>
+            </div>
+            <div className="pj-filter">
+              <input type="checkbox" name="afiliado-pj-filter" checked={isAfiliadoPjFilter} onChange={() => setIsAfiliadoPjFilter(!isAfiliadoPjFilter)} />
+              <span>Afiliado al PJ</span>
             </div>
           </div>
         </div>
