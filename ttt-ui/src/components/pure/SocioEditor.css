@@ -1,4 +1,7 @@
 .socio-editor-container {
+    box-sizing: border-box;
+    border-top: 1px solid var(--background-main);
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,12 +24,13 @@
 }
 
 .socio-editor-container .editor-buttons {
+    box-sizing: border-box;
+    border: 1px solid var(--background-main);
+
     padding: .25rem;
 
     height: calc(100% - .5rem);
     width: calc(50px - .5rem);
-
-    border: 1px solid var(--background-main);
 
     display: flex;
     flex-direction: column;
@@ -55,12 +59,13 @@
 }
 
 .socio-data {
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--background-main);
+
     padding-top: 1.5rem;
     padding-bottom: .5rem;
     margin-right: 2rem;
     text-align: start;
-    border-bottom: 1px solid var(--background-main);
-
 }
 
 .socio-data > div {
@@ -83,6 +88,10 @@
 }
 
 .file-upload {
+    box-sizing: border-box;
+    border: 2px dashed #15367b;
+    border-radius: 8px;
+    
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -90,8 +99,7 @@
     width: 200px;
     padding: 20px;
     margin-top: 30px;
-    border: 2px dashed #15367b;
-    border-radius: 8px;
+
     background-color: #2d2d2d;
     color: white;
     text-align: center;

@@ -1,7 +1,8 @@
 const { Database } = require("sqlite3");
 const { Socio, Jubilacion, Ubicacion, Jubilado } = require("../model");
-const UbicacionService = require("./UbicacionService");
+const UbicacionService = require("./ubicacionService");
 const ContactoService = require("./contactoService");
+const JubilacionService = require("./jubilacionService");
 
 class SociosService {
   /**
@@ -11,6 +12,7 @@ class SociosService {
     this.database = database;
     this.ubicacionService = new UbicacionService(database);
     this.contactoService = new ContactoService(database);
+    this.jubilacionService = new JubilacionService(database);
   }
 
   /**
@@ -24,6 +26,7 @@ class SociosService {
         if (!row) return resolve(null);
         const ubicacion = await this.ubicacionService.getUbicacion(row.id);
         const contacto = await this.contactoService.getContacto(row.id);
+        const jubilacion = await this.jubilacionService.getJubilacion(row.id);
         const socio = new Socio(
           row.id,
           row.nombre,
@@ -33,7 +36,8 @@ class SociosService {
           row.url_dni,
           row.is_afiliado_pj ? true : false,
           ubicacion,
-          contacto
+          contacto,
+          jubilacion
         );
         resolve(socio);
       });
@@ -51,6 +55,8 @@ class SociosService {
           for (let row of rows) {
             const ubicacion = await this.ubicacionService.getUbicacion(row.id);
             const contacto = await this.contactoService.getContacto(row.id);
+            const jubilacion = await this.jubilacionService.getJubilacion(row.id);
+            console.log(jubilacion)
             socios.push(
               new Socio(
                 row.id,
@@ -61,7 +67,8 @@ class SociosService {
                 row.url_dni,
                 row.is_afiliado_pj ? true : false,
                 ubicacion,
-                contacto
+                contacto,
+                jubilacion
               )
             );
           }
@@ -121,7 +128,7 @@ class SociosService {
 
   /**
    * @param {number} id
-   * @param {{nombre: string | null | undefined, apellido: string | null | undefined, fechaNacimiento: Date | null | undefined, numeroDni: number | null  | undefined, ubicacion: Ubicacion}} newSocioData
+   * @param {{nombre: string | null | undefined, apellido: string | null | undefined, fechaNacimiento: Date | null | undefined, numeroDni: number | null  | undefined}} newSocioData
    */
   updateSocio(idSocio, newSocioData) {
     return new Promise(async (resolve, reject) => {

@@ -4,12 +4,14 @@ const sociosRouter = express.Router();
 const db = require("../db/db");
 
 const SociosService = require("../service/SociosService");
-const UbicacionService = require("../service/UbicacionService");
+const UbicacionService = require("../service/ubicacionService");
 const ContactoService = require("../service/contactoService");
+const JubilacionService = require("../service/jubilacionService");
 
 const sociosService = new SociosService(db);
 const ubicacionService = new UbicacionService(db);
 const contactoService = new ContactoService(db);
+const jubilacionService = new JubilacionService(db);
 
 //TODO: ver router.all para middlewares
 sociosRouter.get("/:id?", async (req, res) => {
@@ -89,6 +91,19 @@ sociosRouter.put("/:id", async (req, res) => {
         await contactoService.updateContacto(contactoSocio.id, newTelefono, newCorreo);
       } else {
         await contactoService.createContacto(idSocio, newTelefono, newCorreo);
+      }
+    }
+
+    const newJubilacionData = req.body?.jubilacion || null;
+    const jubilacionSocio = await jubilacionService.getJubilacion(idSocio);
+    if (newJubilacionData === null && jubilacionSocio) {
+     await jubilacionService.deleteJubilacion(jubilacionSocio.id);
+    } else if (newJubilacionData) {
+      const newImgPami = newJubilacionData?.imgPami || null;
+      if (jubilacionSocio) {
+        await jubilacionService.updateJubilacion(jubilacionSocio.id, newImgPami);
+      } else {
+        await jubilacionService.createJubilacion(idSocio, newImgPami);
       }
     }
 

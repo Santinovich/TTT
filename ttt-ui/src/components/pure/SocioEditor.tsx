@@ -11,7 +11,6 @@ import { ToastContext } from "../../context/ToastContext";
 
 const dateToSQLiteString = (date: Date): string => {
   const dateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-  console.log(dateStr)
   return dateStr
 }
 
@@ -82,7 +81,6 @@ function DateData({
   }, [data])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("dentro del input", e.target.value)
     setInputValue(e.target.value);
     if (setNewData) {
       setNewData(e.target.value);
@@ -163,7 +161,7 @@ function BarrioData({
   const [inputValue, setInputValue] = useState(value?.id || undefined);
 
   useEffect(() => {
-    if (!value) return;
+    if (!value) return setInputValue(undefined);
     setInputValue(value.id);
   }, [value]);
 
@@ -216,6 +214,9 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
   const [newEmail, setEmail] = useState<string>("");
   const [newTelefono, setTelefono] = useState<string>("");
 
+  const [newIsJubilado, setNewIsJubilado] = useState<boolean | undefined>(undefined);
+
+
   useEffect(() => {
       setNewApellido("");
       setNewNombre("");
@@ -238,6 +239,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
     if (selectedSocio) {
       let newUbicacion = undefined;
       let newContacto = undefined;
+      let newJubilacion = undefined;
 
       if (newDomicilio || newBarrio) {
         newUbicacion = {
@@ -251,6 +253,11 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
           correo: newEmail || undefined,
         };
       }
+      if (newIsJubilado !== undefined) {
+        newJubilacion = newIsJubilado ? {idSocio: selectedSocio.id} : null;
+      }
+
+      console.log(newJubilacion)
     
       const newData = {
         nombre: newNombre || undefined,
@@ -260,6 +267,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
         isAfiliadoPj: newIsAfiliadoPj === undefined ? selectedSocio.isAfiliadoPj : newIsAfiliadoPj,
         ubicacion: newUbicacion,
         contacto: newContacto,
+        jubilacion: newJubilacion,
       };
 
       const response = await fetch("/api/v1/socios/" + selectedSocio.id, {
@@ -323,8 +331,9 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
               <TextData title="Email" data={selectedSocio.contacto?.correo} setNewData={setEmail} isBeingEdited={isBeingEdited}/>
             </div>
             <div className="data-group">
-              <BooleanData title="Afiliado PJ" value={selectedSocio.isAfiliadoPj} setNewValue={setNewIsAfiliadoPj} isBeingEdited={isBeingEdited} />
-              <div className="file-upload">
+            <BooleanData title="Afiliado PJ" value={selectedSocio.isAfiliadoPj} setNewValue={setNewIsAfiliadoPj} isBeingEdited={isBeingEdited} />
+            <BooleanData title="Jubilado" value={!!selectedSocio.jubilacion} setNewValue={setNewIsJubilado} isBeingEdited={isBeingEdited} />
+            <div className="file-upload">
                 <label className="file-label">
                   <input type="file" accept=".pdf,.jpg,.png" />
                   <p>📂 Cargar DNI</p>

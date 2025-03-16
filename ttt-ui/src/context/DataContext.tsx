@@ -20,15 +20,21 @@ export interface Contacto {
   telefono: number;
 }
 
+export interface Jubilacion {
+  id: number;
+  imgPami: string;
+}
+
 export interface Socio {
   id: number;
   nombre: string;
   apellido: string;
   fechaNacimiento: Date | null;
   numeroDni: number | null;
+  isAfiliadoPj: boolean;
   ubicacion: Ubicacion | null;
   contacto: Contacto | null;
-  isAfiliadoPj: boolean;
+  jubilacion: Jubilacion | null;
 }
 
 interface DataContextType {

@@ -8,52 +8,57 @@ export interface SelectedSocio {
   selectedSocio: Socio | undefined;
   setSelectedSocio: Dispatch<React.SetStateAction<Socio | undefined>>;
 }
-type PjFilterType = "todos" | "afiliado" | "no-afiliado"; 
+type PjFilterType = "todos" | "afiliado" | "no-afiliado";
+type JubiladoFilterType = "todos" | "jubilado" | "joven";
 
 function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
   const dataContext = useContext(DataContext);
-
-  const [barrioSearch, setBarrioSearch] = useState<string>("");
-  const [barriosIdFilters, setBarriosIdFilters] = useState<number[]>([]);
-  const [isAfiliadoPjFilter, setIsAfiliadoPjFilter] = useState<PjFilterType>("todos");
-
-
-  const handleBarrioSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBarrioSearch(event.target.value);
-  };
-
-  const addBarrioFilter = (id: number) => {
-    setBarriosIdFilters([...barriosIdFilters, id]);
-  };
-
-  const deleteBarrioFilter = (id: number) => {
-    const updatedFilters = barriosIdFilters.filter((filter) => filter !== id);
-    setBarriosIdFilters(updatedFilters);
-  };
-
-  const calculateYears = (date1: Date, date2: Date): number => {
-    const differenceInMilliseconds = Math.abs(date2.getTime() - date1.getTime());
-    const millisecondsPerYear = 1000 * 60 * 60 * 24 * 365.25; // Incluyendo años bisiestos
-    return Math.floor(differenceInMilliseconds / millisecondsPerYear);
-  };
-
   if (dataContext !== undefined) {
+    const [barrioSearch, setBarrioSearch] = useState<string>("");
+    const [barriosIdFilters, setBarriosIdFilters] = useState<number[]>([]);
+    const [isAfiliadoPjFilter, setIsAfiliadoPjFilter] = useState<PjFilterType>("todos");
+    const [isJubiladoFilter, setIsJubiladoFilter] = useState<JubiladoFilterType>("todos");
+
+    const calculateYears = (date1: Date, date2: Date): number => {
+      const differenceInMilliseconds = Math.abs(date2.getTime() - date1.getTime());
+      const millisecondsPerYear = 1000 * 60 * 60 * 24 * 365.25; // Incluyendo años bisiestos
+      return Math.floor(differenceInMilliseconds / millisecondsPerYear);
+    };
+
+    const handleBarrioSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setBarrioSearch(event.target.value);
+    };
+
+    const addBarrioFilter = (id: number) => {
+      setBarriosIdFilters([...barriosIdFilters, id]);
+    };
+
+    const deleteBarrioFilter = (id: number) => {
+      const updatedFilters = barriosIdFilters.filter((filter) => filter !== id);
+      setBarriosIdFilters(updatedFilters);
+    };
+
     const getFilteredSocios = (): Socio[] => {
       const filteredSocios = dataContext.socios
-      .filter((s) => {
-        return barriosIdFilters.length === 0
-          ? true
-          : barriosIdFilters.includes(s.ubicacion?.barrio?.id ?? -1);
-      })
-      .filter((s) => {
-        if (isAfiliadoPjFilter === "todos") return true;
-        if (isAfiliadoPjFilter === "afiliado") return s.isAfiliadoPj;
-        if (isAfiliadoPjFilter === "no-afiliado") return !s.isAfiliadoPj;
-      });
+        .filter((s) => {
+          return barriosIdFilters.length === 0
+            ? true
+            : barriosIdFilters.includes(s.ubicacion?.barrio?.id ?? -1);
+        })
+        .filter((s) => {
+          if (isAfiliadoPjFilter === "todos") return true;
+          if (isAfiliadoPjFilter === "afiliado") return s.isAfiliadoPj;
+          if (isAfiliadoPjFilter === "no-afiliado") return !s.isAfiliadoPj;
+        })
+        .filter((s) => {
+          if (isJubiladoFilter === "todos") return true;
+          if (isJubiladoFilter === "jubilado") return !!s.jubilacion;
+          if (isJubiladoFilter === "joven") return !s.jubilacion;
+        });
       return filteredSocios;
-    }
+    };
 
-    function BarriosListSelector () {
+    function BarriosListSelector() {
       if (barrioSearch && dataContext) {
         const elements = dataContext.barrios
           .filter((b) => {
@@ -80,7 +85,7 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
           );
         }
       }
-    };
+    }
 
     function BarriosFilter() {
       return (
@@ -117,10 +122,8 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
     function PjFilter() {
       const handlePjFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value as PjFilterType;
-
-        console.log(value)
-        setIsAfiliadoPjFilter(value)
-      }
+        setIsAfiliadoPjFilter(value);
+      };
 
       return (
         <div className="pj-filter">
@@ -128,7 +131,23 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
             <option value={"todos"}>Afiliados y no afiliados</option>
             <option value={"afiliado"}>Afiliados al PJ</option>
             <option value={"no-afiliado"}>No afiliados al PJ</option>
+          </select>
+        </div>
+      );
+    }
 
+    function JubiladosFilter() {
+      const handleJubiladosFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value as JubiladoFilterType;
+        setIsJubiladoFilter(value);
+      };
+
+      return (
+        <div className="pj-filter">
+          <select value={isJubiladoFilter} onChange={handleJubiladosFilterChange}>
+            <option value={"todos"}>Jóvenes y jubilados</option>
+            <option value={"jubilado"}>Jubilados</option>
+            <option value={"joven"}>Jóvenes</option>
           </select>
         </div>
       );
@@ -141,30 +160,43 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
             <h3>Filtros</h3>
             <BarriosFilter />
             <PjFilter />
+            <JubiladosFilter />
           </div>
         </div>
         <div className="col">
           <table className="socios-list" rules="none">
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Apellido</th>
                 <th>Nombre</th>
                 <th>Edad</th>
               </tr>
             </thead>
             <tbody>
-              {getFilteredSocios().map((s) => {
-                // TODO: corregir
-                const fechaNacimiento = s.fechaNacimiento ? s.fechaNacimiento : new Date();
-                const edad = calculateYears(fechaNacimiento, new Date());
-                return (
-                  <tr key={s.id} onClick={() => setSelectedSocio(s)}>
-                    <td>{s.apellido}</td>
-                    <td>{s.nombre}</td>
-                    <td>{edad}</td>
-                  </tr>
-                );
-              })}
+              {getFilteredSocios().length > 0 ? (
+                getFilteredSocios().map((s) => {
+                  // TODO: corregir
+                  const fechaNacimiento = s.fechaNacimiento ? s.fechaNacimiento : new Date();
+                  const edad = calculateYears(fechaNacimiento, new Date());
+                  return (
+                    <tr key={s.id} onClick={() => setSelectedSocio(s)} className={selectedSocio?.id === s.id ? "selected" : ""}>
+                      <td>{s.id}</td>
+                      <td>{s.apellido}</td>
+                      <td>{s.nombre}</td>
+                      <td>{edad}</td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td></td>
+                  <td style={{ textAlign: "center", color: "var(--font-light" }}>
+                    {"No hay socios para mostrar"}
+                  </td>
+                  <td></td>
+                </tr>
+              )}
             </tbody>
           </table>
           <SocioEditor selectedSocio={selectedSocio} setSelectedSocio={setSelectedSocio} />

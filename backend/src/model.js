@@ -41,8 +41,9 @@ class Socio {
    * @param {string} urlDni
    * @param {Ubicacion} ubicacion
    * @param {Contacto} contacto
+   * @param {Jubilacion} jubilacion
    */
-  constructor(id, nombre, apellido, fechaNacimiento, numeroDni = null, urlDni = null, isAfiliadoPj = false, ubicacion = null, contacto = null) {
+  constructor(id, nombre, apellido, fechaNacimiento, numeroDni = null, urlDni = null, isAfiliadoPj = false, ubicacion = null, contacto = null, jubilacion = null) {
     this.id = id;
     this.nombre = nombre;
     this.apellido = apellido;
@@ -52,6 +53,7 @@ class Socio {
     this.isAfiliadoPj = isAfiliadoPj;
     this.ubicacion = ubicacion;
     this.contacto = contacto;
+    this.jubilacion = jubilacion;
   }
 }
 
