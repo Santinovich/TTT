@@ -34,6 +34,14 @@ interface DbUbicacion {
   id_barrio: number;
 }
 
+interface DbUser {
+  id: number;
+  username: string;
+  password: string;
+  auth_level: number;
+  id_socio: number | null;
+}
+
 interface Barrio {
   id: number;
   nombre: string;
@@ -77,4 +85,9 @@ interface Jubilado extends Socio {
   jubilacion: Jubilacion;
 }
 
-module.exports = { Barrio, Ubicacion, Contacto, Jubilacion, Socio, Jubilado };
+interface LoginProfile {
+  userId: number;
+  username: string;
+  authLevel: number;
+  socio: Socio | null;
+}

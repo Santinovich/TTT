@@ -7,6 +7,14 @@
       "cwd": "${workspaceFolder}/server",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Ejecutar front react",
+      "cwd": "${workspaceFolder}/ttt-ui",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+    },
   ]
 }

@@ -3,9 +3,9 @@ import cors from "cors";
 import fs from "fs";
 import { publicIpv4 } from "public-ip";
 import { configDotenv } from "dotenv";
-import sociosRouter from "./routes/sociosRoutes";
-import ubicacionRouter from "./routes/ubicacionRoutes";
-
+import sociosRouter from "./routes/sociosRouter";
+import ubicacionRouter from "./routes/ubicacionRouter";
+import authRouter from "./routes/authRouter";
 
 configDotenv();
 if (!process.env.PORT || !process.env.SECRET_KEY) {
@@ -21,6 +21,7 @@ if (!process.env.PORT || !process.env.SECRET_KEY) {
   app.use(express.json());
   app.use("/api/v1/socios", sociosRouter);
   app.use("/api/v1/ubicacion", ubicacionRouter);
+  app.use("/api/v1/auth", authRouter);
 
   app.listen(port, async () => {
     console.log(`Servidor de TTT corriendo\n\nLocal:   http://localhost:${port}/`);
