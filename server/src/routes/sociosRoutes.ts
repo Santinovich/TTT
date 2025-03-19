@@ -1,12 +1,11 @@
-const express = require("express");
+import express from "express";
+import SociosService from "../service/SociosService";
+import UbicacionService from "../service/UbicacionService";
+import ContactoService from "../service/ContactoService";
+import JubilacionService from "../service/JubilacionService";
+import db from "../db/db";
+
 const sociosRouter = express.Router();
-
-const db = require("../db/db");
-
-const SociosService = require("../service/SociosService");
-const UbicacionService = require("../service/ubicacionService");
-const ContactoService = require("../service/contactoService");
-const JubilacionService = require("../service/jubilacionService");
 
 const sociosService = new SociosService(db);
 const ubicacionService = new UbicacionService(db);
@@ -24,7 +23,7 @@ sociosRouter.get("/:id?", async (req, res) => {
         res.json(await sociosService.getSocios());
       }
     } else {
-      res.json(await sociosService.getSocioById(id));
+      res.json(await sociosService.getSocioById(parseInt(id)));
     }
   } catch (error) {
     console.error(error);
@@ -52,9 +51,12 @@ sociosRouter.post("/", async (req, res) => {
 
 sociosRouter.put("/:id", async (req, res) => {
   const idSocio = parseInt(req.params.id);
-  if (!idSocio) return res.status(400).json({ error: "El id es obligatorio" });
+  if (!idSocio) {
+    res.status(400).json({ error: "El id es obligatorio" });
+    return;
+  }
 
-  const newSocioData = {};
+  const newSocioData: any = {};
   req.body?.nombre ? (newSocioData.nombre = req.body.nombre) : null;
   req.body?.apellido ? (newSocioData.apellido = req.body.apellido) : null;
   req.body?.fechaNacimiento ? (newSocioData.fechaNacimiento = req.body.fechaNacimiento) : null;
@@ -70,12 +72,10 @@ sociosRouter.put("/:id", async (req, res) => {
     if (newUbicacionData) {
       const newDomicilio = newUbicacionData.domicilio;
       const newBarrioId = newUbicacionData.barrio?.id;
-      
+
       const ubicacionSocio = await ubicacionService.getUbicacion(idSocio);
       if (ubicacionSocio) {
-        await ubicacionService.updateUbicacion(
-          ubicacionSocio.id, newBarrioId, newDomicilio
-        );
+        await ubicacionService.updateUbicacion(ubicacionSocio.id, newBarrioId, newDomicilio);
       } else {
         await ubicacionService.createUbicacion(idSocio, newBarrioId, newDomicilio);
       }
@@ -97,7 +97,7 @@ sociosRouter.put("/:id", async (req, res) => {
     const newJubilacionData = req.body?.jubilacion || null;
     const jubilacionSocio = await jubilacionService.getJubilacion(idSocio);
     if (newJubilacionData === null && jubilacionSocio) {
-     await jubilacionService.deleteJubilacion(jubilacionSocio.id);
+      await jubilacionService.deleteJubilacion(jubilacionSocio.id);
     } else if (newJubilacionData) {
       const newImgPami = newJubilacionData?.imgPami || null;
       if (jubilacionSocio) {
@@ -118,14 +118,17 @@ sociosRouter.put("/:id", async (req, res) => {
 
 sociosRouter.delete("/:id", async (req, res) => {
   const id = parseInt(req.params.id);
-  if (!id) return res.status(400).json({ error: "El id es obligatorio" });
+  if (!id) {
+    res.status(400).json({ error: "El id es obligatorio" });
+    return;
+  }
   try {
     const deletedSocio = await sociosService.deleteSocio(id);
-    res.json({ message: "Socio eliminado exitosamente", deletedSocio});
+    res.json({ message: "Socio eliminado exitosamente", deletedSocio });
   } catch (error) {
-   console.error(error);
+    console.error(error);
     res.status(500).json({ error: "Error al eliminar el socio: " + error });
   }
 });
 
-module.exports = sociosRouter;
+export default sociosRouter;

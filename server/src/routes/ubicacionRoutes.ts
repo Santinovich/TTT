@@ -1,8 +1,8 @@
-const express = require("express");
+import express from "express";
 const ubicacionRouter = express.Router();
-const UbicacionService = require("../service/UbicacionService");
+import UbicacionService from "../service/UbicacionService";
 
-const db = require("../db/db");
+import db from "../db/db";
 
 const ubicacionService = new UbicacionService(db);
 
@@ -17,4 +17,4 @@ ubicacionRouter.get("/barrios", async (req, res) => {
   }
 });
 
-module.exports = ubicacionRouter;
+export default ubicacionRouter;

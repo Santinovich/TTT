@@ -1,6 +1,6 @@
-const fs = require("fs");
-const path = require("path");
-const { Database } = require("sqlite3");
+import fs from "fs";
+import path from "path";
+import { Database } from "sqlite3";
 
 const dbFile = "TTT.db";
 const schemaFile = "schema.sql";
@@ -10,7 +10,6 @@ const dbExists = fs.existsSync(path.join(__dirname, dbFile));
 
 const db = new Database(path.join(__dirname, dbFile), (err) => {
   if (err) throw err;
-
   if (!dbExists) {
     const createDbSql = fs.readFileSync(path.join(__dirname, schemaFile), "utf8");
     db.exec(createDbSql.toString(), (err) => {
@@ -23,4 +22,4 @@ const db = new Database(path.join(__dirname, dbFile), (err) => {
   }
 });
 
-module.exports = db;
+export default db;
