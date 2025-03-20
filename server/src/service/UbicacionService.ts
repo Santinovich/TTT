@@ -32,6 +32,7 @@ export default class UbicacionService {
             nombre: row.nombre,
             comuna: row.comuna,
           };
+          barrios.push(barrio);
         });
         resolve(barrios);
       });

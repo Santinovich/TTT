@@ -1,8 +1,8 @@
 import { Dispatch, useContext, useState } from "react";
-import { DataContext, Socio } from "../../context/DataContext";
-import ListSelector from "./ListSelector";
+import { DataContext, Socio } from "../context/DataContext";
+import ListSelector from "./pure/ListSelector";
 import "./sociosList.css";
-import { SocioEditor } from "./SocioEditor";
+import { SocioEditor } from "./pure/SocioEditor";
 
 export interface SelectedSocio {
   selectedSocio: Socio | undefined;
@@ -180,7 +180,11 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
                   const fechaNacimiento = s.fechaNacimiento ? s.fechaNacimiento : new Date();
                   const edad = calculateYears(fechaNacimiento, new Date());
                   return (
-                    <tr key={s.id} onClick={() => setSelectedSocio(s)} className={selectedSocio?.id === s.id ? "selected" : ""}>
+                    <tr
+                      key={s.id}
+                      onClick={() => setSelectedSocio(s)}
+                      className={selectedSocio?.id === s.id ? "selected" : ""}
+                    >
                       <td>{s.id}</td>
                       <td>{s.apellido}</td>
                       <td>{s.nombre}</td>
@@ -190,6 +194,7 @@ function SociosList({ selectedSocio, setSelectedSocio }: SelectedSocio) {
                 })
               ) : (
                 <tr>
+                  <td></td>
                   <td></td>
                   <td style={{ textAlign: "center", color: "var(--font-light" }}>
                     {"No hay socios para mostrar"}

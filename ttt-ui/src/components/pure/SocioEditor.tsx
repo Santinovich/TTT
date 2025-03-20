@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAdd, faClose, faPencil, faSave } from "@fortawesome/free-solid-svg-icons";
-import { SelectedSocio } from "./SociosList";
+import { SelectedSocio } from "../SociosList";
 import { useContext, useEffect, useState } from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Barrio, DataContext } from "../../context/DataContext";

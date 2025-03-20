@@ -1,4 +1,6 @@
 :root {
+    --header-height: 60px;
+
     --background-main: rgb(29, 27, 30);
     --background-contrast: rgb(37, 38, 41);
     --background-highlight: rgb(47, 49, 56);
@@ -8,6 +10,7 @@
     --primary-color: #15367b;
 
     --shadow1: 10px 10px 20px rgba(0, 0, 0, 0.5);
+    --shadow2: 10px 10px 20px rgba(0, 0, 0, 0.2);
 
     --input-height: 32px;
 
@@ -55,6 +58,7 @@ button {
     border-radius: 5px;
 
     background-color: var(--primary-color);
+    color: var(--font-primary);
     padding: .25rem
 }
 

@@ -17,7 +17,6 @@ authRouter.post("/login", async (req, res) => {
       const { token } = await authService.login(username, password);
       res.json({ token });
     } catch (error) {
-      console.error(error);
       res.status(401).json({ error });
     }
   }

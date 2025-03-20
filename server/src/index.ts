@@ -6,6 +6,7 @@ import { configDotenv } from "dotenv";
 import sociosRouter from "./routes/sociosRouter";
 import ubicacionRouter from "./routes/ubicacionRouter";
 import authRouter from "./routes/authRouter";
+import authProfile from "./middleware/authProfile";
 
 configDotenv();
 if (!process.env.PORT || !process.env.SECRET_KEY) {
@@ -19,8 +20,8 @@ if (!process.env.PORT || !process.env.SECRET_KEY) {
 
   app.use(cors());
   app.use(express.json());
-  app.use("/api/v1/socios", sociosRouter);
-  app.use("/api/v1/ubicacion", ubicacionRouter);
+  app.use("/api/v1/socios", authProfile, sociosRouter);
+  app.use("/api/v1/ubicacion", authProfile, ubicacionRouter);
   app.use("/api/v1/auth", authRouter);
 
   app.listen(port, async () => {
@@ -35,3 +36,4 @@ if (!process.env.PORT || !process.env.SECRET_KEY) {
     }
   });
 }
+
