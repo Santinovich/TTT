@@ -2,9 +2,50 @@
     height: var(--header-height);
     text-align: center;
     background-color: #15367b;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.header h1 {
+.header > * {
+    box-sizing: border-box;
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+
+.header .logo {
+    box-sizing: border-box;
     margin-top: 0px;
     padding: 1rem;
+
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 2rem;
+    font-weight: 600;
+
+    text-shadow: 6px 6px 4px rgba(0, 0, 0, .2);
+}
+
+.header .logo:hover {
+    cursor: pointer;
+}
+
+.header .logo img {
+    width: 40px;
+    height: 40px;
+}
+
+.header button {
+    width: 100px;
+    height: 70%;
+
+    background-color: color-mix(in srgb, var(--primary-color) , white 5%);
+    font-weight: bold;
+
+    border: 0px;
+    box-shadow: var(--shadow3);
 }

@@ -23,6 +23,7 @@ export interface Contacto {
 
 export interface Jubilacion {
   id: number;
+  idSocio: number;
   imgPami: string;
 }
 
@@ -38,12 +39,24 @@ export interface Socio {
   jubilacion: Jubilacion | null;
 }
 
+export type NewSocioData = Partial<
+  Omit<Socio, "fechaNacimiento" | "ubicacion" | "contacto" | "jubilacion"> & {
+    fechaNacimiento?: string;
+    contacto?: Partial<Contacto>;
+    ubicacion?: Partial<Ubicacion>;
+    jubilacion?: Partial<Jubilacion>;
+  }
+>;
+
 interface DataContextType {
   token: string | null;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
   login: (username: string, password: string) => void;
   socios: Socio[];
   barrios: Barrio[];
   getSocio: (id: number) => Socio | undefined;
+  createSocio: (newSocioData: NewSocioData) => void;
+  updateSocio: (id: number, newSocioData: NewSocioData) => void;
   fetchSocios: () => Promise<void>;
 }
 
@@ -162,9 +175,7 @@ export function DataProvider({ children }: React.PropsWithChildren) {
       const response = await fetchWithTimeout(
         "/api/v1/ubicacion/barrios",
         {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
+          headers: { authorization: `Bearer ${token}` },
         },
         () => {
           toastContext?.addToast({ text: "No hubo respuesta del servidor", type: "error" });
@@ -184,8 +195,40 @@ export function DataProvider({ children }: React.PropsWithChildren) {
     return socios.find((socio) => socio.id === id);
   };
 
+  const createSocio = async (newSocioData: NewSocioData) => {
+    const response = await fetch("/api/v1/socios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", authorization: `Bearer ${token}` },
+      body: JSON.stringify(newSocioData),
+    });
+    if (response.ok) {
+      const {message} = await response.json();
+      toastContext?.addToast({text: message});
+      fetchSocios();
+    } else {
+      const {error} = await response.json();
+      toastContext?.addToast({text: error || "Error desconocido al crear socio.", type: "error"});
+    }
+  }
+
+  const updateSocio = async (id: number, newSocioData: NewSocioData) => {
+    const response = await fetch("/api/v1/socios/" + id, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", authorization: `Bearer ${token}` },
+      body: JSON.stringify(newSocioData),
+    });
+    if (response.ok) {
+      const {message} = await response.json();
+      toastContext?.addToast({text: message});
+      fetchSocios();
+    } else {
+      const {error} = await response.json();
+      toastContext?.addToast({text: error || "Error desconocido al actualizar socio.", type: "error"});
+    }
+  }
+
   return (
-    <DataContext.Provider value={{ token, login, socios, barrios, fetchSocios, getSocio }}>
+    <DataContext.Provider value={{ token, setToken, login, socios, barrios, fetchSocios, getSocio, createSocio, updateSocio }}>
       {children}
     </DataContext.Provider>
   );

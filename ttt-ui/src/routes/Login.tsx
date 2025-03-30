@@ -26,14 +26,14 @@ export default function Login() {
               <input
                 type="text"
                 id="username"
-                placeholder="Username"
+                placeholder="Usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
               <input
                 type="password"
                 id="password"
-                placeholder="Password"
+                placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />

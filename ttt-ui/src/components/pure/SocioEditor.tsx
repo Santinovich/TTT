@@ -7,7 +7,6 @@ import { Barrio, DataContext } from "../../context/DataContext";
 
 import "./SocioEditor.css";
 import { CreateSocio } from "./CreateSocio";
-import { ToastContext } from "../../context/ToastContext";
 
 const dateToSQLiteString = (date: Date): string => {
   const dateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
@@ -197,7 +196,6 @@ function BarrioData({
 
 export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) {
   const dataContext = useContext(DataContext);
-  const toastContext = useContext(ToastContext);
 
   const [isBeingEdited, setIsBeingEdited] = useState<boolean>(false);
   const [isCreateSocioVisible, setCreateSocioVisible] = useState<boolean>(false);
@@ -254,12 +252,10 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
         };
       }
       if (newIsJubilado !== undefined) {
-        newJubilacion = newIsJubilado ? {idSocio: selectedSocio.id} : null;
+        newJubilacion = newIsJubilado ? {idSocio: selectedSocio.id} : undefined;
       }
 
-      console.log(newJubilacion)
-    
-      const newData = {
+      dataContext?.updateSocio(selectedSocio.id, {
         nombre: newNombre || undefined,
         apellido: newApellido || undefined,
         numeroDni: parseInt(newNumeroDni) || undefined,
@@ -268,21 +264,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
         ubicacion: newUbicacion,
         contacto: newContacto,
         jubilacion: newJubilacion,
-      };
-
-      const response = await fetch("/api/v1/socios/" + selectedSocio.id, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newData),
       });
-      if (response.ok) {
-        dataContext?.fetchSocios();
-        const {message} = await response.json();
-        toastContext?.addToast({text: message});
-      } else {
-        const {error} = await response.json();
-        toastContext?.addToast({text: error || "Error desconocido al actualizar socio.", type: "error"});
-      }
     }
   };
 
