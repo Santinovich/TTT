@@ -1,7 +1,7 @@
 import { Dispatch, useContext, useState } from "react";
 import { DataContext, Socio } from "../context/DataContext";
 import ListSelector from "./pure/ListSelector";
-import "./sociosList.css";
+import "./SociosList.css";
 import { SocioEditor } from "./pure/SocioEditor";
 
 export interface SelectedSocio {
