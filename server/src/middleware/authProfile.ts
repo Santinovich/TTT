@@ -18,8 +18,12 @@ export default function authProfile(req: AuthenticatedRequest, res: Response, ne
     const token = authHeader.split(" ")[1];
     try {
       const profile = jsonwebtoken.verify(token, secretKey) as LoginProfile;
-      req.profile = profile;
-      next();
+      if (profile.authLevel < 1) {
+        res.status(403).json({ message: "No autorizado" });
+      } else {
+        req.profile = profile;
+        next();
+      }
     } catch (error) {
       res.status(403).json({ message: "Token inválido" });
     }

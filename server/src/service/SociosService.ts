@@ -39,6 +39,30 @@ export default class SociosService {
     });
   }
 
+  getSocioByUsername(username: string) {
+    return new Promise<Socio | null>((resolve, reject) => {
+      this.database.get<DbSocio>("SELECT * FROM socio WHERE username=?", [username], async (error, row) => {
+        if (error) return reject(error);
+        if (!row) return resolve(null);
+        const ubicacion = await this.ubicacionService.getUbicacion(row.id);
+        const contacto = await this.contactoService.getContacto(row.id);
+        const jubilacion = await this.jubilacionService.getJubilacion(row.id);
+        const socio: Socio = {
+          id: row.id,
+          nombre: row.nombre,
+          apellido: row.apellido,
+          numeroDni: row.num_dni,
+          fechaNacimiento: row.nacimiento ? new Date(row.nacimiento) : null,
+          isAfiliadoPj: row.is_afiliado_pj ? true : false,
+          ubicacion,
+          contacto,
+          jubilacion,
+        };
+        resolve(socio);
+      });
+    });
+  }
+
   getSocios() {
     return new Promise<Socio[]>((resolve, reject) => {
       this.database.all<DbSocio>("SELECT * FROM socio", async (error, rows) => {

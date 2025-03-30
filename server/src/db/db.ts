@@ -12,6 +12,7 @@ const db = new Database(path.join(__dirname, dbFile), (err) => {
   if (err) throw err;
   if (!dbExists) {
     const createDbSql = fs.readFileSync(path.join(__dirname, schemaFile), "utf8");
+
     db.exec(createDbSql.toString(), (err) => {
       if (err) throw err;
       const insertsSql = fs.readFileSync(path.join(__dirname, insertsFile), "utf8");

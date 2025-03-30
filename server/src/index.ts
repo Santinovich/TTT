@@ -1,12 +1,12 @@
 import express from "express";
 import cors from "cors";
 import fs from "fs";
-import { publicIpv4 } from "public-ip";
 import { configDotenv } from "dotenv";
 import sociosRouter from "./routes/sociosRouter";
 import ubicacionRouter from "./routes/ubicacionRouter";
 import authRouter from "./routes/authRouter";
 import authProfile from "./middleware/authProfile";
+import path from "path";
 
 configDotenv();
 if (!process.env.PORT || !process.env.SECRET_KEY) {
@@ -24,11 +24,18 @@ if (!process.env.PORT || !process.env.SECRET_KEY) {
   app.use("/api/v1/ubicacion", authProfile, ubicacionRouter);
   app.use("/api/v1/auth", authRouter);
 
+  app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  });
+
   app.listen(port, async () => {
     console.log(`Servidor de TTT corriendo\n\nLocal:   http://localhost:${port}/`);
     try {
-      const publicIp = await publicIpv4();
-      console.log(`Público: http://${publicIp}:${port}/ (verificar puertos abiertos)`);
+      const response = await fetch("https://api.ipify.org?format=json");
+      const data = await response.json();
+      console.log(`Público: http://${data.ip}:${port}/ (verificar puertos abiertos)`);
     } catch (error) {
       console.error(
         "No se pudo obtener la IP pública, servidor posiblemente sin acceso a internet"
@@ -36,4 +43,3 @@ if (!process.env.PORT || !process.env.SECRET_KEY) {
     }
   });
 }
-

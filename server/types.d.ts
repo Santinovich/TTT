@@ -37,7 +37,8 @@ interface DbUbicacion {
 interface DbUser {
   id: number;
   username: string;
-  password: string;
+  password_hash: string;
+  password_salt: string;
   auth_level: number;
   id_socio: number | null;
 }
