@@ -1,11 +1,6 @@
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Socio } from "./Socio";
-
-export enum DocumentoTipo {
-    DNI = "DNI",
-    Pasaporte = "Pasaporte",
-    Otro = "Otro"
-}
+import { DocumentoTipo } from "ttt-shared/enum/documento-tipo.enum";
 
 @Entity()
 export class Documento {
@@ -13,15 +8,16 @@ export class Documento {
     id: number;
 
     @Column({
-        type: "enum",
+        type: "text",
         enum: DocumentoTipo,
         default: DocumentoTipo.DNI,
     })
     tipo: DocumentoTipo;
 
     @Column({ type: "text" })
-    ruta: string;
+    nombreArchivo: string;
 
-    @ManyToOne(() => Socio, (socio) => socio.documentos)
-    socio: number;
+    @ManyToOne(() => Socio, (socio) => socio.documentos, { onDelete: "CASCADE" })
+    @JoinColumn()
+    socio: Socio;
 }

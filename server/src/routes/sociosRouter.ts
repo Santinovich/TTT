@@ -1,134 +1,112 @@
 import express from "express";
-import SociosService from "../service/SociosService";
-import UbicacionService from "../service/UbicacionService";
-import ContactoService from "../service/ContactoService";
-import JubilacionService from "../service/JubilacionService";
-import db from "../db/db";
+import SociosService from "../service/SocioService";
+import { CreateSocioDto } from "@shared/dto/socio.dto";
+import { mapSocioToDto } from "../utils/dto-mappers";
+import { TTTError } from "../utils/ttt-error";
 
 const sociosRouter = express.Router();
 
-const sociosService = new SociosService(db);
-const ubicacionService = new UbicacionService(db);
-const contactoService = new ContactoService(db);
-const jubilacionService = new JubilacionService(db);
+const sociosService = new SociosService();
 
-//TODO: ver router.all para middlewares
 sociosRouter.get("/:id?", async (req, res) => {
-  const { id } = req.params;
-  try {
-    if (!id) {
-      if (req.query.jubilado === "true") {
-        res.json(await sociosService.getJubilados());
-      } else {
-        res.json(await sociosService.getSocios());
-      }
-    } else {
-      res.json(await sociosService.getSocioById(parseInt(id)));
+    const { id } = req.params;
+    try {
+        if (!id) {
+            const socios = await sociosService.getSocios();
+            const dtos = socios.map((socio) => mapSocioToDto(socio));
+            res.json({ socios: dtos });
+        } else {
+            const socio = await sociosService.getSocioById(parseInt(id));
+            if (!socio) {
+                res.status(404).json({ error: "Socio no encontrado" });
+                return;
+            }
+            res.json(mapSocioToDto(socio));
+        }
+    } catch (error) {
+        console.error(error);
+        if (error instanceof TTTError) {
+            res.status(error.statusCode).json({ error: error.message });
+            return;
+        }
+        res.status(500).json({ error: "Error al obtener los socios" });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener los socios: " + error });
-  }
 });
 
 sociosRouter.post("/", async (req, res) => {
-  const nombre = req.body?.nombre;
-  const apellido = req.body?.apellido || null;
-  const fechaNacimiento = req.body?.fechaNacimiento;
-  const numeroDni = req.body?.numeroDni || null;
-  try {
-    if (nombre) {
-      await sociosService.createSocio({ nombre, apellido, fechaNacimiento, numeroDni });
-      res.json({ message: "Socio creado exitosamente" });
-    } else {
-      res.status(400).json({ error: "El nombre es obligatorio" });
+    const socioData = req.body as CreateSocioDto;
+    if (!socioData.nombre) {
+        res.status(400).json({ error: "El nombre es obligatorio" });
+        return;
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al crear el socio: " + error });
-  }
+    if (socioData.contacto && !socioData.contacto.telefono && !socioData.contacto.correo) {
+        res.status(400).json({ error: "El contacto debe tener teléfono o un correo" });
+        return;
+    }
+    if (socioData.ubicacion && !socioData.ubicacion.domicilio) {
+        res.status(400).json({ error: "El domicilio es obligatorio en la ubicación" });
+        return;
+    }
+
+    try {
+        const newSocio = await sociosService.createSocio(socioData);
+        res.status(201).json(mapSocioToDto(newSocio));
+    } catch (error) {
+        console.error(error);
+        if (error instanceof TTTError) {
+        res.status(error.statusCode).json({ error: error.message });
+        return;
+        }
+        res.status(500).json({ error: "Error desconocido al crear el socio" });
+    }
 });
 
-sociosRouter.put("/:id", async (req, res) => {
-  const idSocio = parseInt(req.params.id);
-  if (!idSocio) {
-    res.status(400).json({ error: "El id es obligatorio" });
-    return;
-  }
+sociosRouter.patch("/:id", async (req, res) => {
+    const { id } = req.params;
+    const newSocioData = req.body as CreateSocioDto;
 
-  const newSocioData: any = {};
-  req.body?.nombre ? (newSocioData.nombre = req.body.nombre) : null;
-  req.body?.apellido ? (newSocioData.apellido = req.body.apellido) : null;
-  req.body?.fechaNacimiento ? (newSocioData.fechaNacimiento = req.body.fechaNacimiento) : null;
-  req.body?.numeroDni ? (newSocioData.numeroDni = req.body.numeroDni) : null;
-  req.body?.isAfiliadoPj !== undefined ? (newSocioData.isAfiliadoPj = req.body.isAfiliadoPj) : null;
-
-  try {
-    db.run("BEGIN TRANSACTION");
-
-    await sociosService.updateSocio(idSocio, newSocioData);
-
-    const newUbicacionData = req.body?.ubicacion || null;
-    if (newUbicacionData) {
-      const newDomicilio = newUbicacionData.domicilio;
-      const newBarrioId = newUbicacionData.barrio?.id;
-
-      const ubicacionSocio = await ubicacionService.getUbicacion(idSocio);
-      if (ubicacionSocio) {
-        await ubicacionService.updateUbicacion(ubicacionSocio.id, newBarrioId, newDomicilio);
-      } else {
-        await ubicacionService.createUbicacion(idSocio, newBarrioId, newDomicilio);
-      }
+    if (!id) {
+        res.status(400).json({ error: "ID del socio es obligatorio" });
+        return;
     }
 
-    const newContactoData = req.body?.contacto || null;
-    if (newContactoData) {
-      const newTelefono = newContactoData.telefono;
-      const newCorreo = newContactoData.correo;
-
-      const contactoSocio = await contactoService.getContacto(idSocio);
-      if (contactoSocio) {
-        await contactoService.updateContacto(contactoSocio.id, newTelefono, newCorreo);
-      } else {
-        await contactoService.createContacto(idSocio, newTelefono, newCorreo);
-      }
+    try {
+        const updatedSocio = await sociosService.updateSocio(parseInt(id), newSocioData);
+        res.status(200).json(mapSocioToDto(updatedSocio));
+    } catch (error) {
+        console.error(error);
+        if (error instanceof TTTError) {
+            res.status(error.statusCode).json({ error: error.message });
+            return;
+        }
+        res.status(500).json({ error: "Error al actualizar el socio" });
     }
-
-    const newJubilacionData = req.body?.jubilacion || null;
-    const jubilacionSocio = await jubilacionService.getJubilacion(idSocio);
-    if (newJubilacionData === null && jubilacionSocio) {
-      await jubilacionService.deleteJubilacion(jubilacionSocio.id);
-    } else if (newJubilacionData) {
-      const newImgPami = newJubilacionData?.imgPami || null;
-      if (jubilacionSocio) {
-        await jubilacionService.updateJubilacion(jubilacionSocio.id, newImgPami);
-      } else {
-        await jubilacionService.createJubilacion(idSocio, newImgPami);
-      }
-    }
-
-    db.run("COMMIT");
-    res.json({ message: "Socio actualizado exitosamente" });
-  } catch (error) {
-    db.run("ROLLBACK");
-    console.error(error);
-    res.status(500).json({ error: "Error al actualizar el socio: " + error });
-  }
 });
 
 sociosRouter.delete("/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
-  if (!id) {
-    res.status(400).json({ error: "El id es obligatorio" });
-    return;
-  }
-  try {
-    const deletedSocio = await sociosService.deleteSocio(id);
-    res.json({ message: "Socio eliminado exitosamente", deletedSocio });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al eliminar el socio: " + error });
-  }
+    const { id } = req.params;
+    if (!id) {
+        res.status(400).json({ error: "ID del socio es obligatorio" });
+        return;
+    }
+    try {
+        const socio = await sociosService.getSocioById(parseInt(id));
+        if (!socio) {
+            res.status(404).json({ error: "Socio no encontrado" });
+            return;
+        }
+        await sociosService.deleteSocio(socio.id);
+        res.status(200).send({
+            message: "Socio eliminado correctamente",
+        });
+    } catch (error) {
+        console.error(error);
+        if (error instanceof TTTError) {
+            res.status(error.statusCode).json({ error: error.message });
+            return;
+        }
+        res.status(500).json({ error: "Error al eliminar el socio" });
+    }
 });
 
 export default sociosRouter;

@@ -1,0 +1,11 @@
+{
+  "name": "ttt-shared",
+  "version": "1.0.0",
+  "author": "lombi",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/node": "^24.0.4",
+    "typescript": "^5.8.3"
+  }
+}

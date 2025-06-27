@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jsonwebtoken from "jsonwebtoken";
+import { UsuarioProfile } from "../types";
+import { UsuarioRol } from "@shared/enum/usuario-rol.enum";
 
 export interface AuthenticatedRequest extends Request {
-  profile?: LoginProfile;
+  usuario?: UsuarioProfile;
 }
 
 export default function authProfile(req: AuthenticatedRequest, res: Response, next: NextFunction) {
@@ -17,11 +19,11 @@ export default function authProfile(req: AuthenticatedRequest, res: Response, ne
   } else {
     const token = authHeader.split(" ")[1];
     try {
-      const profile = jsonwebtoken.verify(token, secretKey) as LoginProfile;
-      if (profile.authLevel < 1) {
+      const profile = jsonwebtoken.verify(token, secretKey) as UsuarioProfile;
+      if (profile.rol !== UsuarioRol.Admin) {
         res.status(403).json({ message: "No autorizado" });
       } else {
-        req.profile = profile;
+        req.usuario = profile;
         next();
       }
     } catch (error) {

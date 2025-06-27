@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Socio } from "./Socio";
 import { Barrio } from "./Barrio";
 
@@ -10,10 +10,10 @@ export class Ubicacion {
     @Column()
     domicilio: string;
 
-    @ManyToOne(() => Barrio, (barrio) => barrio.ubicaciones, { eager: true })
-    barrio: Barrio;
+    @ManyToOne(() => Barrio, (barrio) => barrio.ubicaciones, { eager: true, nullable: true })
+    barrio: Barrio | null;
 
-    @OneToOne(() => Socio, (socio) => socio.ubicacion)
-    socio: Socio
-
+    @OneToOne(() => Socio, (socio) => socio.ubicacion, { onDelete: "CASCADE" })
+    @JoinColumn()
+    socio: Socio;
 }

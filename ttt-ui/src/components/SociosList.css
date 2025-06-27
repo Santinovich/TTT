@@ -3,7 +3,6 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-
 }
 
 /**/
@@ -20,8 +19,6 @@
     justify-content: space-between;
     align-items: center;
 }
-
-
 
 .socios-list-container > .col {
     box-sizing: border-box;

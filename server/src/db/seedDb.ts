@@ -1,8 +1,12 @@
 import { AppDataSource } from "./data-source";
 import { Barrio } from "./entity/Barrio";
+import { Etiqueta } from "./entity/Etiqueta";
+import { Socio } from "./entity/Socio";
 
 export async function seedDb() {
     const barriosRepository = AppDataSource.getRepository(Barrio);
+    const etiquetasRepository = AppDataSource.getRepository(Etiqueta);
+
     const existingBarrios = await barriosRepository.find();
     if (existingBarrios.length === 0) {
         await barriosRepository.save([
@@ -201,5 +205,32 @@ export async function seedDb() {
             },
         ]);
         console.log("Barrios por defecto insertados.");
+    }
+
+    const existingEtiquetas = await etiquetasRepository.find();
+    if (existingEtiquetas.length === 0) {
+        await etiquetasRepository.save([
+            {
+                nombre: "Joven",
+                descripcion: "Socios jóvenes",
+            },
+            {
+                nombre: "Adulto",
+                descripcion: "Socios adultos",
+            },
+            {
+                nombre: "Jubilado",
+                descripcion: "Socios jubilados",
+            },
+            {
+                nombre: "Niño",
+                descripcion: "Socios niños",
+            },
+            {
+                nombre: "Afiliado al PJ",
+                descripcion: "Socios afiliados al Partido Justicialista",
+            }
+        ]);
+        console.log("Etiquetas por defecto insertadas.");
     }
 }
