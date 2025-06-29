@@ -9,13 +9,7 @@ import SocioDetails from "./SocioDetails";
 type PjFilterType = "todos" | "afiliado" | "no-afiliado";
 type JubiladoFilterType = "todos" | "jubilado" | "joven";
 
-function SociosList({
-    selectedSocio,
-    setSelectedSocio,
-}: {
-    selectedSocio: SocioDto | null;
-    setSelectedSocio: Dispatch<SocioDto | null>;
-}) {
+function SociosList({ selectedSocio, setSelectedSocio }: { selectedSocio: SocioDto | null; setSelectedSocio: Dispatch<SocioDto | null> }) {
     const dataContext = useContext(DataContext);
 
     if (dataContext !== undefined) {
@@ -47,27 +41,22 @@ function SociosList({
         };
 
         const getFilteredSocios = (): SocioDto[] => {
-            const filteredSocios = dataContext.socios.filter((s) => {
-                return barriosIdFilters.length === 0
-                    ? true
-                    : barriosIdFilters.includes(s.ubicacion?.barrioId ?? -1);
-            }).filter(s => {
-                if (nombreSearch.trim() === "") return true;
-                const regex = new RegExp(".*" + nombreSearch + ".*", "i");
-                return s.nombre.match(regex) || s.apellido?.match(regex);
-            });
+            const filteredSocios = dataContext.socios
+                .filter((s) => {
+                    return barriosIdFilters.length === 0 ? true : barriosIdFilters.includes(s.ubicacion?.barrioId ?? -1);
+                })
+                .filter((s) => {
+                    if (nombreSearch.trim() === "") return true;
+                    const regex = new RegExp(".*" + nombreSearch + ".*", "i");
+                    return s.nombre.match(regex) || s.apellido?.match(regex);
+                });
             return filteredSocios;
         };
 
         function BarriosFilter() {
             return (
                 <div className="barrios-filter">
-                    <input
-                        list="barrios"
-                        placeholder="Barrios"
-                        value={barrioSearch}
-                        onChange={handleBarrioSearch}
-                    />
+                    <input list="barrios" placeholder="Barrios" value={barrioSearch} onChange={handleBarrioSearch} />
                     <datalist id="barrios">
                         {dataContext?.barrios
                             .filter((b) => {
@@ -78,11 +67,7 @@ function SociosList({
                                 return b.nombre.match(regex) ? true : false;
                             })
                             .map((b) => (
-                                <option
-                                    key={b.id}
-                                    value={b.nombre}
-                                    onClick={() => addBarrioFilter(b.id)}
-                                />
+                                <option key={b.id} value={b.nombre} onClick={() => addBarrioFilter(b.id)} />
                             ))}
                     </datalist>
                     <div>
@@ -90,11 +75,7 @@ function SociosList({
                             const b = dataContext?.barrios.find((b) => b.id === id);
                             if (b) {
                                 return (
-                                    <div
-                                        key={id}
-                                        className="filter selected"
-                                        onClick={() => deleteBarrioFilter(b.id)}
-                                    >
+                                    <div key={id} className="filter selected" onClick={() => deleteBarrioFilter(b.id)}>
                                         <span>{b.nombre}</span>
                                     </div>
                                 );
@@ -163,16 +144,12 @@ function SociosList({
                             </div>
                             {getFilteredSocios().length > 0
                                 ? getFilteredSocios().map((s) => {
-                                      const edad = s.fechaNacimiento
-                                          ? calculateYears(s.fechaNacimiento, new Date())
-                                          : "N/A";
+                                      const edad = s.fechaNacimiento ? calculateYears(s.fechaNacimiento, new Date()) : "N/A";
                                       return (
                                           <>
                                               <div
                                                   key={s.id}
-                                                  className={`socios-list-row ${
-                                                      selectedSocio?.id === s.id ? "selected" : ""
-                                                  }`}
+                                                  className={`socios-list-row ${selectedSocio?.id === s.id ? "selected" : ""}`}
                                                   onClick={() => handleSocioSelect(s)}
                                               >
                                                   <span>{s.id}</span>
@@ -180,9 +157,7 @@ function SociosList({
                                                   <span>{s.apellido}</span>
                                                   <span>{edad}</span>
                                               </div>
-                                              {selectedSocio === s ? (
-                                                  <SocioDetails socio={s} />
-                                              ) : null}
+                                              {selectedSocio === s ? <SocioDetails socio={s} /> : null}
                                           </>
                                       );
                                   })

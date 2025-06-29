@@ -1,14 +1,14 @@
 import { SocioDto } from "ttt-shared/dto/socio.dto";
 import "./SociosList.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAdd, faClose, faDeleteLeft, faEye, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faClose, faDeleteLeft, faEdit, faEye, faNoteSticky, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { DocumentoDto } from "ttt-shared/dto/documento.dto";
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../../context/DataContext";
 import { EtiquetaDto } from "ttt-shared/dto/etiqueta.dto";
 
 interface SocioDetailsProps {
-    socio: SocioDto
+    socio: SocioDto;
 }
 
 function EmptyDocumentPreview() {
@@ -20,7 +20,7 @@ function EmptyDocumentPreview() {
     );
 }
 
-function DocumentPreview({doc}: {doc: DocumentoDto}) {
+function DocumentPreview({ doc }: { doc: DocumentoDto }) {
     return (
         <div className="doc-preview">
             <img src={"api/v1/static/documentos/" + doc.nombreArchivo} alt="" />
@@ -28,15 +28,7 @@ function DocumentPreview({doc}: {doc: DocumentoDto}) {
     );
 }
 
-function Etiqueta({
-    children,
-    etiqueta,
-    onClick,
-}: {
-    children?: React.ReactNode;
-    etiqueta: EtiquetaDto;
-    onClick?: () => void;
-}) {
+function Etiqueta({ children, etiqueta, onClick }: { children?: React.ReactNode; etiqueta: EtiquetaDto; onClick?: () => void }) {
     const [hovered, setHovered] = useState(false);
 
     return (
@@ -57,7 +49,7 @@ function Etiqueta({
     );
 }
 
-function EtiquetaAdder({socio}: {socio: SocioDto}) {
+function EtiquetaAdder({ socio }: { socio: SocioDto }) {
     const dataContext = useContext(DataContext);
     if (!dataContext) return null;
 
@@ -65,9 +57,8 @@ function EtiquetaAdder({socio}: {socio: SocioDto}) {
     const [etiquetas, setEtiquetas] = useState([] as EtiquetaDto[]);
 
     useEffect(() => {
-        setEtiquetas(dataContext.etiquetas.filter(e => !socio.etiquetas?.some(se => se.id === e.id)));
+        setEtiquetas(dataContext.etiquetas.filter((e) => !socio.etiquetas?.some((se) => se.id === e.id)));
     }, [dataContext.etiquetas]);
-
 
     return (
         <>
@@ -105,7 +96,7 @@ function SocioDetails({ socio }: SocioDetailsProps) {
     if (!dataContext) return null;
     return (
         <div className="socio-details">
-            <div className="socio-details-container">
+            <div className="socio-details-data-container">
                 <div className="socio-details-data">
                     <h2>Detalles del Socio</h2>
                     <p>
@@ -119,13 +110,14 @@ function SocioDetails({ socio }: SocioDetailsProps) {
                     </p>
                     <p>
                         <strong>Fecha de Nacimiento:</strong>{" "}
-                        {socio.fechaNacimiento
-                            ? new Date(socio.fechaNacimiento).toLocaleDateString()
-                            : <span className="info-text">No especificado</span>}
+                        {socio.fechaNacimiento ? (
+                            new Date(socio.fechaNacimiento).toLocaleDateString()
+                        ) : (
+                            <span className="info-text">No especificado</span>
+                        )}
                     </p>
                     <p>
-                        <strong>Domicilio:</strong>{" "}
-                        {socio.ubicacion?.domicilio || <span className="info-text">No especificado</span>}
+                        <strong>Domicilio:</strong> {socio.ubicacion?.domicilio || <span className="info-text">No especificado</span>}
                     </p>
                     <p>
                         <strong>Barrio:</strong> {socio.ubicacion?.barrioId || <span className="info-text">No especificado</span>}
@@ -142,10 +134,7 @@ function SocioDetails({ socio }: SocioDetailsProps) {
                     <div className="documentos">
                         {socio.documentos && socio.documentos.length > 0 ? (
                             <>
-                                <DocumentPreview
-                                    key={socio.documentos[0].id}
-                                    doc={socio.documentos[0]}
-                                />
+                                <DocumentPreview key={socio.documentos[0].id} doc={socio.documentos[0]} />
                                 <div className="buttons">
                                     <button>
                                         <FontAwesomeIcon icon={faUpload} /> Agregar
@@ -164,9 +153,14 @@ function SocioDetails({ socio }: SocioDetailsProps) {
                         {socio.etiquetas && socio.etiquetas.length > 0 ? (
                             socio.etiquetas.map((etiqueta) => {
                                 return (
-                                    <Etiqueta etiqueta={etiqueta} onClick={() => {dataContext.removeEtiqueta(socio.id, etiqueta.id)}}>
-                                            <FontAwesomeIcon icon={faDeleteLeft} />
-                                    </Etiqueta> 
+                                    <Etiqueta
+                                        etiqueta={etiqueta}
+                                        onClick={() => {
+                                            dataContext.removeEtiqueta(socio.id, etiqueta.id);
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faDeleteLeft} />
+                                    </Etiqueta>
                                 );
                             })
                         ) : (
@@ -174,12 +168,23 @@ function SocioDetails({ socio }: SocioDetailsProps) {
                                 <span>No hay etiquetas</span>
                             </>
                         )}
-                        <EtiquetaAdder socio={socio}/>
+                        <EtiquetaAdder socio={socio} />
                     </div>
                 </div>
+            </div>
+            <div className="socio-details-actions-container">
+                <button>
+                    <FontAwesomeIcon icon={faTrash} />
+                </button>
+                <button>
+                    <FontAwesomeIcon icon={faNoteSticky} />
+                </button>
+                <button>
+                    <FontAwesomeIcon icon={faEdit} />
+                </button>
             </div>
         </div>
     );
 }
 
-export default SocioDetails
+export default SocioDetails;
