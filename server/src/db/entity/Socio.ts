@@ -1,7 +1,6 @@
 import {
     Column,
     Entity,
-    JoinColumn,
     JoinTable,
     ManyToMany,
     OneToMany,
@@ -14,6 +13,7 @@ import { Ubicacion } from "./Ubicacion";
 import { Etiqueta } from "./Etiqueta";
 import { Contacto } from "./Contacto";
 import { Nota } from "./Nota";
+import { Genero } from "ttt-shared/enum/genero.enum";
 
 @Entity()
 export class Socio {
@@ -31,6 +31,9 @@ export class Socio {
 
     @Column({ type: "integer", nullable: true })
     numeroDni: number | null;
+
+    @Column({ type: "text", enum: Genero, nullable: false, default: Genero.PrefieroNoDecirlo })
+    genero: Genero;
 
     @OneToOne(() => Ubicacion, (ubicacion) => ubicacion.socio, {
         eager: true,

@@ -1,5 +1,4 @@
 .socio-editor-container {
-    box-sizing: border-box;
     border-top: 1px solid var(--background-main);
 
     display: flex;
@@ -10,13 +9,11 @@
 }
 
 .socio-editor {
-    box-sizing: border-box;
     padding: 1rem;
     width: 100%;
 }
 
 .socio-editor-container .editor-buttons {
-    box-sizing: border-box;
     border: 1px solid var(--background-main);
 
     padding: .25rem;
@@ -59,7 +56,6 @@
 }
 
 .socio-data {
-    box-sizing: border-box;
     border-bottom: 1px solid var(--background-main);
 
     padding-top: 1.5rem;
@@ -88,7 +84,6 @@
 }
 
 .file-upload {
-    box-sizing: border-box;
     border: 2px dashed #15367b;
     border-radius: 8px;
     

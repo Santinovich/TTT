@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import Header from "../components/pure/Header";
 import { DataContext } from "../context/DataContext";
 
 import "./Login.css";
@@ -8,7 +7,7 @@ export default function Login() {
   const dataContext = useContext(DataContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  
   if (dataContext) {
     const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
@@ -18,7 +17,6 @@ export default function Login() {
 
     return (
       <>
-        <Header />
         <div className="login">
           <div className="login-container">
             <h2>Inicio de sesión</h2>

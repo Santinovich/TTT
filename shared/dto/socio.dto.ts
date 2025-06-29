@@ -1,20 +1,24 @@
+import { Genero } from "../enum/genero.enum";
+import { DocumentoDto } from "./documento.dto";
 import { EtiquetaDto } from "./etiqueta.dto";
 
 export interface SocioDto {
     id: number;
     nombre: string;
     apellido?: string;
-    fechaNacimiento?: string;
+    fechaNacimiento?: string | Date;
     numeroDni?: number;
+    genero: Genero;
     ubicacion?: {
         domicilio: string;
         barrioId?: number;
     };
-    etiquetas?: EtiquetaDto[];
     contacto?: {
         telefono?: string;
         correo?: string;
     };
+    etiquetas?: EtiquetaDto[];
+    documentos?: DocumentoDto[]
 }
 
 export interface GetSocioDto extends SocioDto {
@@ -30,6 +34,7 @@ export interface CreateSocioDto {
     apellido?: string;
     fechaNacimiento?: string;
     numeroDni?: number;
+    genero: Genero;
     ubicacion?: {
         domicilio: string;
         barrioId?: number;

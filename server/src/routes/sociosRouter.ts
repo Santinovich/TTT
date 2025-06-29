@@ -2,7 +2,8 @@ import express from "express";
 import SociosService from "../service/SocioService";
 import { CreateSocioDto } from "@shared/dto/socio.dto";
 import { mapSocioToDto } from "../utils/dto-mappers";
-import { TTTError } from "../utils/ttt-error";
+import TTTError from "../utils/ttt-error";
+import { Genero } from "ttt-shared/enum/genero.enum";
 
 const sociosRouter = express.Router();
 
@@ -45,6 +46,10 @@ sociosRouter.post("/", async (req, res) => {
     }
     if (socioData.ubicacion && !socioData.ubicacion.domicilio) {
         res.status(400).json({ error: "El domicilio es obligatorio en la ubicación" });
+        return;
+    }
+    if (socioData.genero && !Object.values(Genero).includes(socioData.genero)) {
+        res.status(400).json({ error: "Género inválido" });
         return;
     }
 

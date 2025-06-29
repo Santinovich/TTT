@@ -5,3 +5,4 @@ export interface UsuarioProfile {
     username: string;
     rol: UsuarioRol
 }
+

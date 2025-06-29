@@ -1,6 +1,5 @@
 import { configDotenv } from "dotenv";
 import fs from "fs";
-import { TTTError } from "./ttt-error";
 
 export default function () {
     configDotenv();
@@ -9,7 +8,7 @@ export default function () {
     if (missingEnvVars.length > 0) {
         fs.writeFileSync(".env", "PORT=\nSECRET_KEY=");
 
-        throw new TTTError(
+        throw new Error(
             `Faltan las siguientes variables de entorno: ${missingEnvVars.join(
                 ", "
             )}. Definirlas en el archivo .env`

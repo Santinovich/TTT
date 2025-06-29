@@ -11,6 +11,7 @@ import etiquetasRouter from "./routes/etiquetasRouter";
 import notasRouter from "./routes/notasRouter";
 import documentosRouter from "./routes/documentosRouter";
 
+
 async function init() {
     await AppDataSource.initialize();
     await seedDb();
@@ -29,12 +30,13 @@ async function init() {
     app.use("/api/v1/documentos", documentosRouter);
     app.use("/api/v1/auth", authRouter);
 
-    app.use("/api/v1/documentos", express.static("uploads/documentos"));
-    app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+    app.use("/api/v1/static/documentos", express.static("uploads/documentos"));
 
     app.get("*", (req, res) => {
         res.sendFile(path.join(__dirname, "public", "index.html"));
     });
+    app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+
 
     app.listen(port, async () => {
         console.log(`Servidor de TTT corriendo\n\nLocal:   http://localhost:${port}/`);

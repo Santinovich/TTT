@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "author": "lombi",
   "license": "ISC",
+  "main": "index.js",
   "description": "",
   "dependencies": {
     "@types/node": "^24.0.4",

@@ -1,6 +1,6 @@
 import express from "express";
 import AuthService from "../service/AuthService";
-import { TTTError } from "../utils/ttt-error";
+import TTTError from "../utils/ttt-error";
 
 const authRouter = express.Router();
 

@@ -4,8 +4,8 @@ import { Socio } from "../db/entity/Socio";
 import { Ubicacion } from "../db/entity/Ubicacion";
 import { Barrio } from "../db/entity/Barrio";
 import { Contacto } from "../db/entity/Contacto";
-import { TTTError } from "../utils/ttt-error";
 import { CreateSocioDto } from "@shared/dto/socio.dto";
+import TTTError from "../utils/ttt-error";
 
 export default class SociosService {
     constructor(
@@ -31,6 +31,7 @@ export default class SociosService {
             apellido: socioDto.apellido,
             fechaNacimiento: socioDto.fechaNacimiento ? new Date(socioDto.fechaNacimiento) : null,
             numeroDni: socioDto.numeroDni,
+            genero: socioDto.genero,
         });
         if (socioDto.ubicacion) {
           const barrio = await this.barrioRepository.findOne({
@@ -71,6 +72,9 @@ export default class SociosService {
         }
         if (newSocioData.numeroDni !== undefined) {
             socio.numeroDni = newSocioData.numeroDni;
+        }
+        if (newSocioData.genero !== undefined) {
+            socio.genero = newSocioData.genero;
         }
 
         if (newSocioData.ubicacion) {

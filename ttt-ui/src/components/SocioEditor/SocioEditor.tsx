@@ -1,12 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAdd, faClose, faPencil, faSave } from "@fortawesome/free-solid-svg-icons";
-import { SelectedSocio } from "../SociosList";
+import { SelectedSocio } from "../sections/SociosList";
 import { useContext, useEffect, useState } from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { Barrio, DataContext } from "../../context/DataContext";
+import { DataContext } from "../../context/DataContext";
 
 import "./SocioEditor.css";
-import { CreateSocio } from "./CreateSocio";
+import { CreateSocio } from "../pure/CreateSocio";
+import { BarrioDto } from "ttt-shared/dto/ubicacion.dto";
 
 const dateToSQLiteString = (date: Date): string => {
   const dateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
@@ -144,15 +145,15 @@ function BooleanData({
   );
 }
 
-function BarrioData({
+function BarrioDtoData({
   title,
   value,
   setNewValue,
   isBeingEdited = false,
 }: {
   title: string;
-  value: Barrio | undefined;
-  setNewValue: React.Dispatch<React.SetStateAction<Barrio | undefined>>;
+  value: BarrioDto | undefined;
+  setNewValue: React.Dispatch<React.SetStateAction<BarrioDto | undefined>>;
   isBeingEdited?: boolean;
 }) {
   const dataContext = useContext(DataContext);
@@ -207,7 +208,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
   const [newIsAfiliadoPj, setNewIsAfiliadoPj] = useState<boolean | undefined>(undefined);
 
   const [newDomicilio, setNewDomicilio] = useState<string>("");
-  const [newBarrio, setNewBarrio] = useState<Barrio | undefined>(undefined);
+  const [newBarrioDto, setNewBarrioDto] = useState<BarrioDto | undefined>(undefined);
 
   const [newEmail, setEmail] = useState<string>("");
   const [newTelefono, setTelefono] = useState<string>("");
@@ -220,7 +221,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
       setNewNombre("");
       setNewNumeroDni("");
       setNewFechaNacimiento("");
-      setNewBarrio(undefined)
+      setNewBarrioDto(undefined)
       setNewDomicilio("");
       setNewIsAfiliadoPj(undefined);
       setEmail("");
@@ -229,8 +230,8 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
   }, [selectedSocio]);
 
   useEffect(() => {
-    setSelectedSocio(dataContext?.getSocio(selectedSocio ? selectedSocio.id : -1));
-  }, [dataContext?.socios])
+      setSelectedSocio(dataContext?.getSocio(selectedSocio ? selectedSocio.id : -1));
+  }, [dataContext?.socios]);
 
   const handlePostNewData = async () => {
     setIsBeingEdited(false);
@@ -239,10 +240,10 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
       let newContacto = undefined;
       let newJubilacion = undefined;
 
-      if (newDomicilio || newBarrio) {
+      if (newDomicilio || newBarrioDto) {
         newUbicacion = {
           domicilio: newDomicilio || selectedSocio.ubicacion?.domicilio,
-          barrio: newBarrio || selectedSocio.ubicacion?.barrio,
+          barrio: newBarrioDto || selectedSocio.ubicacion?.barrio,
         };
       }
       if (newTelefono || newEmail) {
@@ -308,7 +309,7 @@ export function SocioEditor({ selectedSocio, setSelectedSocio }: SelectedSocio) 
             </div>
             <div className="data-group">
               <TextData title="Domicilio" data={selectedSocio.ubicacion?.domicilio} setNewData={setNewDomicilio} isBeingEdited={isBeingEdited} />
-              <BarrioData title={"Barrio"} value={selectedSocio.ubicacion?.barrio ? selectedSocio.ubicacion?.barrio : undefined} setNewValue={setNewBarrio} isBeingEdited={isBeingEdited} />
+              <BarrioDtoData title={"BarrioDto"} value={selectedSocio.ubicacion?.barrio ? selectedSocio.ubicacion?.barrio : undefined} setNewValue={setNewBarrioDto} isBeingEdited={isBeingEdited} />
               <TextData title="Teléfono" data={selectedSocio.contacto?.telefono} setNewData={setTelefono} isBeingEdited={isBeingEdited} />
               <TextData title="Email" data={selectedSocio.contacto?.correo} setNewData={setEmail} isBeingEdited={isBeingEdited}/>
             </div>

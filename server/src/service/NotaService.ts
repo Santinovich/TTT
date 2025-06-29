@@ -1,8 +1,8 @@
 import { AppDataSource } from "../db/data-source";
 import { Nota } from "../db/entity/Nota";
 import { Socio } from "../db/entity/Socio";
-import { TTTError } from "../utils/ttt-error";
 import { DeepPartial } from "typeorm";
+import TTTError from "../utils/ttt-error";
 
 export default class NotaService {
     constructor(

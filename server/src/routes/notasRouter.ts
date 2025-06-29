@@ -2,7 +2,7 @@ import express from "express";
 import NotaService from "../service/NotaService";
 import { CreateNotaDto, GetNotaDto, GetNotasDto } from "@shared/dto/nota.dto";
 import { mapNotasToDtos, mapNotaToDto } from "../utils/dto-mappers";
-import { TTTError } from "../utils/ttt-error";
+import TTTError from "../utils/ttt-error";
 
 const notasRouter = express.Router();
 const notaService = new NotaService();

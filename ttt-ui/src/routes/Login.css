@@ -15,7 +15,6 @@
 }
 
 .login form {
-    box-sizing: border-box;
     background-color: var(--background-contrast);
     border-radius: .5rem;
     box-shadow: var(--shadow2);

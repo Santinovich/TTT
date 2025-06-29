@@ -1,7 +1,7 @@
 import { AppDataSource } from "../db/data-source";
 import { Documento } from "../db/entity/Documento";
 import { Socio } from "../db/entity/Socio";
-import { TTTError } from "../utils/ttt-error";
+import TTTError from "../utils/ttt-error";
 
 export default class DocumentoService {
     constructor(

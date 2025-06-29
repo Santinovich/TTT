@@ -15,6 +15,7 @@
 }
 
 .toast-container > div {
+    z-index: 10001;
     --toast-border-radius: .25rem;
 
     height: 100px;
@@ -32,11 +33,11 @@
 
     cursor: pointer;
 
-    animation: fadeIn .3s;
+    animation: fadeInToast .3s;
 }
 
 .toast-container > div.fade-out {
-    animation: fadeOut .3s;
+    animation: fadeOutToast .3s;
 }
 
 .toast-color{
@@ -66,12 +67,12 @@
     padding: 1rem;
 }
 
-@keyframes fadeIn {
+@keyframes fadeInToast {
     0% { opacity: 0; transform: translateY(20px); }
     100% { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeOut {
+@keyframes fadeOutToast {
     0% { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(20px); }
 }

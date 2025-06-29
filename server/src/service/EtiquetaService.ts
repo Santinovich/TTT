@@ -1,8 +1,8 @@
 import { DeepPartial, In } from "typeorm";
 import { AppDataSource } from "../db/data-source";
 import { Etiqueta } from "../db/entity/Etiqueta";
-import { TTTError } from "../utils/ttt-error";
 import { Socio } from "../db/entity/Socio";
+import TTTError from "../utils/ttt-error";
 
 export default class EtiquetaService {
     constructor(

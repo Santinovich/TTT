@@ -2,9 +2,9 @@ import jsonwebtoken from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { AppDataSource } from "../db/data-source";
 import { Usuario } from "../db/entity/Usuario";
-import { TTTError } from "../utils/ttt-error";
 import { GetUsuarioDto } from "@shared/dto/usuario.dto";
 import { LoginResponseDto } from "@shared/dto/login.dto";
+import TTTError from "../utils/ttt-error";
 
 const signToken = (usuario: Usuario) => {
     const secret = process.env.SECRET_KEY;

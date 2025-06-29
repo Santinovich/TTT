@@ -1,19 +1,28 @@
-import Header from "../components/pure/Header";
-import SociosList from "../components/SociosList";
+import { useContext, useEffect, useState } from "react";
+import SociosList from "../components/sections/SociosList";
 import "./Dashboard.css";
-import { useState } from "react";
-import { Socio } from "../context/DataContext";
+import { SocioDto } from "ttt-shared/dto/socio.dto";
+import { DataContext } from "../context/DataContext";
 
 function Dashboard() {
-  const [selectedSocio, setSelectedSocio] = useState<Socio>();
+  const dataContext = useContext(DataContext);
+  if (!dataContext) return;
+
+  const [selectedSocio, setSelectedSocio] = useState<SocioDto | null>(null);
+
+  // Se actualiza el socio seleccionado si sus datos cambiaron para evitar que se cierre el detalle
+  useEffect(() => {
+    const i = dataContext.socios.findIndex(s => s.id === selectedSocio?.id);
+    if (selectedSocio && i !== -1) {
+      setSelectedSocio(dataContext.socios[i]);
+    }
+  }, [dataContext.socios]);
 
   return (
     <>
-      <Header />
       <div className="dashboard">
         <div className="main-container">
-          <h2>Socios</h2>
-          <SociosList selectedSocio={selectedSocio} setSelectedSocio={setSelectedSocio} />
+          <SociosList selectedSocio={selectedSocio} setSelectedSocio={setSelectedSocio}/>
         </div>
       </div>
     </>

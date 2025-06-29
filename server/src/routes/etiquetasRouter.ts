@@ -2,7 +2,7 @@ import express from "express";
 import { AssignEtiquetasDto, CreateEtiquetaDto, DeleteEtiquetasDto, GetEtiquetaDto, GetEtiquetasDto } from "@shared/dto/etiqueta.dto";
 import EtiquetaService from "../service/EtiquetaService";
 import { mapEtiquetasToDtos, mapEtiquetaToDto } from "../utils/dto-mappers";
-import { TTTError } from "../utils/ttt-error";
+import TTTError from "../utils/ttt-error";
 
 const etiquetasRouter = express.Router();
 const etiquetaService = new EtiquetaService();

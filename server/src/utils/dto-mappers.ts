@@ -14,18 +14,12 @@ export function mapSocioToDto(socio: Socio): SocioDto {
             ? socio.fechaNacimiento.toISOString().split("T")[0]
             : undefined,
         numeroDni: socio.numeroDni || undefined,
+        genero: socio.genero,
         ubicacion: socio.ubicacion
             ? {
                   domicilio: socio.ubicacion?.domicilio || "",
                   barrioId: socio.ubicacion?.barrio?.id || undefined,
               }
-            : undefined,
-        etiquetas: socio.etiquetas
-            ? socio.etiquetas.map((etiqueta) => ({
-                  id: etiqueta.id,
-                  nombre: etiqueta.nombre,
-                  descripcion: etiqueta.descripcion || undefined,
-              }))
             : undefined,
         contacto: socio.contacto
             ? {
@@ -33,6 +27,21 @@ export function mapSocioToDto(socio: Socio): SocioDto {
                   correo: socio.contacto?.correo || undefined,
               }
             : undefined,
+        etiquetas: socio.etiquetas
+            ? socio.etiquetas.map((etiqueta) => ({
+                  id: etiqueta.id,
+                  nombre: etiqueta.nombre,
+                  descripcion: etiqueta.descripcion || undefined,
+                  color: etiqueta.color || undefined,
+              }))
+            : undefined,
+        documentos: socio.documentos
+            ? socio.documentos.map((doc) => ({
+                  id: doc.id,
+                  tipo: doc.tipo,
+                  nombreArchivo: doc.nombreArchivo,
+              }))
+            : [],
     };
 }
 

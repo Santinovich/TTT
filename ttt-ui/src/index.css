@@ -11,7 +11,7 @@
 
     --shadow1: 10px 10px 20px rgba(0, 0, 0, 0.5);
     --shadow2: 10px 10px 20px rgba(0, 0, 0, 0.2);
-    --shadow3: 3px 3px 5px rgba(0, 0, 0, 0.2);
+    --shadow3: 4px 4px 4px rgba(0, 0, 0, 0.15);
 
     --input-height: 32px;
 
@@ -30,8 +30,11 @@ html,
     overflow-x: hidden;
 }
 
-input, select {
+*, *::before, *::after {
     box-sizing: border-box;
+}
+
+input, select {
     border: 0px;
     
     background-color: rgba(255, 255, 255, 0.13);
@@ -54,13 +57,18 @@ select option {
 }
 
 button {
-    box-sizing: border-box;
     border: 1px solid var(--background-main);
     border-radius: 5px;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
     background-color: var(--primary-color);
+    box-shadow: var(--shadow3);
     color: var(--font-primary);
-    padding: .25rem
+    padding: .5rem 1rem;
 }
 
 button:hover {
@@ -69,13 +77,19 @@ button:hover {
     border-color: var(--primary-color);
 }
 
+button:disabled {
+    background-color: var(--background-contrast);
+    color: var(--font-light);
+    cursor: not-allowed;
+}
+
 .main-container {
     width: 80%;
 }
 
 .selected {
-    box-sizing: border-box !important;
-    border: 1px solid var(--primary-color);
+    z-index: 10;
+    box-shadow: 0 0 0 1px var(--primary-color);
     background-color: color-mix(in srgb, var(--primary-color), var(--background-contrast) 80%) !important;
 }
 

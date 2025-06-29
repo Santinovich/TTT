@@ -1,0 +1,232 @@
+.socios-list-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.socios-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Rows */
+
+.socios-list-row {
+    display: flex;
+    width: 100%;
+}
+
+.socios-list-row:nth-child(odd) {
+    background-color: var(--background-contrast);
+}
+
+.socios-list-row:first-child {
+    font-weight: bold;
+}
+
+.socios-list-row:hover {
+    background-color: color-mix(in srgb, var(--primary-color), var(--background-contrast) 95%);
+    cursor: pointer;
+}
+
+.socios-list-row>span {
+    flex: 1;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.socios-list-row>span:nth-child(1),
+.socios-list-row>span:nth-child(4) {
+    flex: .15;
+}
+
+/* Componentes hijos */
+
+.socios-list-side-panel {
+    min-width: 350px;
+    padding: 1rem;
+    background-color: var(--background-contrast);
+}
+
+.socios-list-side-panel .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.socio-details {
+    z-index: 1;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--background-contrast);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.socio-details-container {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.socio-details-container .socio-details-data {
+    flex: .6;
+}
+
+.socio-details-container .socio-details-misc {
+    flex: .4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.socio-details .documentos {
+    width: 100%;
+    min-width: 300px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.socio-details .documentos .buttons {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.socio-details .documentos button {
+    flex: .5;
+}
+
+.socio-details .doc-preview,
+.socio-details .doc-preview img
+{
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: .5rem;
+    cursor: pointer;
+
+}
+
+.socio-details .doc-preview.empty {
+    background-color: var(--background-main);
+    color: var(--font-light);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    font-style: italic;
+    border: 1px dashed var(--font-light);
+}
+
+.socio-details .etiquetas {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.socio-details .etiquetas > span {
+    font-size: .9rem;
+    color: var(--font-light);
+    text-align: center;
+}
+
+.socio-details .etiquetas button {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--primary-color);
+    border-radius: .75rem;
+}
+
+.socio-details .etiqueta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: .75rem;
+    font-weight: bold;
+    background-color: var(--primary-color);
+    box-shadow: var(--shadow3);
+    padding: .25rem .5rem;
+    height: 1.75rem;
+    border-radius: .5rem;
+    gap: .25rem;
+}
+
+.socio-details .etiqueta:hover {
+    background-color: color-mix(in srgb, var(--primary-color), white 10%);
+    cursor: pointer;
+}
+
+/* .socio-details .etiqueta-hover-content {
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+    border-radius: .25rem;
+    padding: .5rem;
+    z-index: 10;
+    display: flex;
+    justify-content: right;
+    border-radius: .5rem;
+    animation: fadeIn 0.1s ease-in-out;
+} */
+
+.socio-details .etiquetas .etiquetas-list {
+    position: absolute;
+    background-color: var(--background-contrast);
+    border: 1px solid var(--primary-color);
+    box-shadow: var(--shadow3);
+    border-radius: .25rem;
+    padding: .5rem;
+    z-index: 10;
+    width: 200px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
+}
+
+@media (max-width: 1000px) {
+    .socios-list-container {
+        flex-wrap: wrap;
+    }
+
+    .socios-list-side-panel {
+        min-width: 350px !important;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .socios-list-container>.col {
+        min-width: 350px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .socio-details-container {
+        flex-direction: column;
+    }
+
+    .socio-details-container .socio-details-data,
+    .socio-details-container .socio-details-misc {
+        width: 100%;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

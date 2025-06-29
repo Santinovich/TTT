@@ -1,7 +1,6 @@
 import express from "express";
 import multer from "multer";
 import fs from "fs";
-import { TTTError } from "../utils/ttt-error";
 import DocumentoService from "../service/DocumentoService";
 import { DocumentoTipo } from "ttt-shared/enum/documento-tipo.enum";
 import {
@@ -9,6 +8,7 @@ import {
     GetDocumentoDto,
     GetDocumentosDto,
 } from "ttt-shared/dto/documento.dto";
+import TTTError from "../utils/ttt-error";
 
 const documentosPath = "uploads/documentos";
 
