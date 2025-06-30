@@ -5,6 +5,7 @@ import { DataContext } from "../../context/DataContext";
 import { SocioDto } from "ttt-shared/dto/socio.dto";
 import { calculateYears } from "../../utils/calculateYears";
 import SocioDetails from "./SocioDetails";
+import SocioPanel from "./SocioPanel";
 
 type PjFilterType = "todos" | "afiliado" | "no-afiliado";
 type JubiladoFilterType = "todos" | "jubilado" | "joven";
@@ -132,6 +133,9 @@ function SociosList({ selectedSocio, setSelectedSocio }: { selectedSocio: SocioD
                             <BarriosFilter />
                             <PjFilter />
                             <JubiladosFilter />
+                            <h3>Acciones</h3>
+                            <button>Alta de socio</button>
+                            <button>Administrar etiquetas</button>
                         </div>
                     </div>
                     <div className="col">
@@ -157,7 +161,7 @@ function SociosList({ selectedSocio, setSelectedSocio }: { selectedSocio: SocioD
                                                   <span>{s.apellido}</span>
                                                   <span>{edad}</span>
                                               </div>
-                                              {selectedSocio === s ? <SocioDetails socio={s} /> : null}
+                                              {selectedSocio === s ? <SocioPanel socio={s} /> : null}
                                           </>
                                       );
                                   })

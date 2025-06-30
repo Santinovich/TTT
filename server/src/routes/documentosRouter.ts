@@ -3,11 +3,7 @@ import multer from "multer";
 import fs from "fs";
 import DocumentoService from "../service/DocumentoService";
 import { DocumentoTipo } from "ttt-shared/enum/documento-tipo.enum";
-import {
-    CreateDocumentoDto,
-    GetDocumentoDto,
-    GetDocumentosDto,
-} from "ttt-shared/dto/documento.dto";
+import { CreateDocumentoDto, GetDocumentoDto, GetDocumentosDto } from "ttt-shared/dto/documento.dto";
 import TTTError from "../utils/ttt-error";
 
 const documentosPath = "uploads/documentos";
@@ -41,9 +37,7 @@ const documentosRouter = express.Router();
 const documentoService = new DocumentoService();
 
 documentosRouter.get("/:idDocumento", async (req, res) => {
-    const idDocumento = !isNaN(parseInt(req.params.idDocumento))
-        ? parseInt(req.params.idDocumento)
-        : null;
+    const idDocumento = !isNaN(parseInt(req.params.idDocumento)) ? parseInt(req.params.idDocumento) : null;
     if (!idDocumento) {
         res.status(400).json({ error: "ID de documento inválido" });
         return;
@@ -73,9 +67,7 @@ documentosRouter.get("/:idDocumento", async (req, res) => {
 });
 
 documentosRouter.get("/", async (req, res) => {
-    const idSocio = !isNaN(parseInt(req.query.idSocio as string))
-        ? parseInt(req.query.idSocio as string)
-        : null;
+    const idSocio = !isNaN(parseInt(req.query.idSocio as string)) ? parseInt(req.query.idSocio as string) : null;
     if (!idSocio) {
         res.status(400).json({ error: "ID de socio inválido" });
         return;
@@ -109,9 +101,7 @@ documentosRouter.post("/", upload.single("documento"), async (req, res) => {
         res.status(400).json({ error: "No se ha subido ningún archivo" });
         return;
     }
-    const idSocio = !isNaN(parseInt(req.query.idSocio as string))
-        ? parseInt(req.query.idSocio as string)
-        : null;
+    const idSocio = !isNaN(parseInt(req.query.idSocio as string)) ? parseInt(req.query.idSocio as string) : null;
     if (!idSocio) {
         res.status(400).json({ error: "ID de socio inválido" });
         return;
@@ -128,21 +118,11 @@ documentosRouter.post("/", upload.single("documento"), async (req, res) => {
         nombreArchivo: req.file.filename,
     });
 
-    const dto: GetDocumentoDto = {
-        documento: {
-            id: newDocumento.id,
-            tipo: newDocumento.tipo,
-            nombreArchivo: newDocumento.nombreArchivo,
-        },
-    };
-
-    res.status(201).json(dto);
+    res.status(201).json({ message: "Documento subido correctamente", documento: newDocumento });
 });
 
 documentosRouter.delete("/:idDocumento", async (req, res) => {
-    const idDocumento = !isNaN(parseInt(req.params.idDocumento))
-        ? parseInt(req.params.idDocumento)
-        : null;
+    const idDocumento = !isNaN(parseInt(req.params.idDocumento)) ? parseInt(req.params.idDocumento) : null;
     if (!idDocumento) {
         res.status(400).json({ error: "ID de documento inválido" });
         return;
@@ -158,9 +138,7 @@ documentosRouter.delete("/:idDocumento", async (req, res) => {
             fs.unlinkSync(filePath);
         }
         await documentoService.deleteDocumento(idDocumento);
-        res.status(200).send(
-            { message: "Documento eliminado correctamente" }
-        );
+        res.status(200).send({ message: "Documento eliminado correctamente" });
     } catch (error) {
         console.error(error);
         if (error instanceof TTTError) {

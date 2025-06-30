@@ -25,7 +25,7 @@
     font-size: 2rem;
     font-weight: 600;
 
-    text-shadow: 6px 6px 4px rgba(0, 0, 0, .2);
+    text-shadow: 6px 6px 4px rgba(0, 0, 0, 0.2);
 }
 
 .header .logo:hover {
@@ -38,10 +38,9 @@
 }
 
 .header button {
-    width: 100px;
     height: 70%;
 
-    background-color: color-mix(in srgb, var(--primary-color) , white 5%);
+    background-color: color-mix(in srgb, var(--primary-color), white 5%);
     font-weight: bold;
 
     border: 0px;

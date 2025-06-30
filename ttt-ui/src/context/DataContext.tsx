@@ -5,6 +5,8 @@ import { CreateSocioDto, GetSociosDto, SocioDto } from "ttt-shared/dto/socio.dto
 import { BarrioDto, GetBarriosDto } from "ttt-shared/dto/ubicacion.dto";
 import { fetchWithTimeout } from "../utils/fetchWithTimeout";
 import { EtiquetaDto } from "ttt-shared/dto/etiqueta.dto";
+import { NotaDto } from "ttt-shared/dto/nota.dto";
+import { DocumentoTipo } from "ttt-shared/enum/documento-tipo.enum";
 
 interface DataContextType {
     token: string | null;
@@ -16,8 +18,11 @@ interface DataContextType {
     getSocio: (id: number) => SocioDto | undefined;
     createSocio: (newSocioData: CreateSocioDto) => void;
     updateSocio: (id: number, newSocioData: CreateSocioDto) => void;
+    deleteSocio: (id: number) => void;
+    uploadDocumento: (socioId: number, file: File) => void;
     addEtiqueta: (socioId: number, etiquetaId: number) => void;
     removeEtiqueta: (socioId: number, etiquetaId: number) => void;
+    getNotasFromSocio: (socioId: number) => Promise<NotaDto[]>;
     fetchSocios: () => Promise<void>;
 }
 
@@ -48,10 +53,7 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         fetchEtiquetas();
     }, [token]);
 
-    const handleErrorResponse = async (
-        errorResponse: Response,
-        defaultMessage: string = "Error en el servidor"
-    ) => {
+    const handleErrorResponse = async (errorResponse: Response, defaultMessage: string = "Error en el servidor") => {
         const errorData = await errorResponse.json();
         const errorMessage = errorData.error || defaultMessage;
         toastContext?.addToast({ text: errorMessage, type: "error" });
@@ -109,9 +111,7 @@ export function DataProvider({ children }: React.PropsWithChildren) {
             }
             const { socios } = (await response.json()) as GetSociosDto;
             socios.forEach((socio) => {
-                socio.fechaNacimiento = socio.fechaNacimiento
-                    ? new Date(socio.fechaNacimiento)
-                    : undefined;
+                socio.fechaNacimiento = socio.fechaNacimiento ? new Date(socio.fechaNacimiento) : undefined;
             });
             setSocios(socios);
         } catch (error) {
@@ -165,7 +165,7 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const getSocio = (id: number) => {
         return socios.find((socio) => socio.id === id);
@@ -200,6 +200,37 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         fetchSocios();
     };
 
+    const deleteSocio = async (id: number) => {
+        const response = await fetch(`/api/v1/socios/${id}`, {
+            method: "DELETE",
+            headers: { authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) {
+            return handleErrorResponse(response, "Error al eliminar socio");
+        }
+        const { message } = await response.json();
+        toastContext?.addToast({ text: message });
+        fetchSocios();
+    };
+
+    const uploadDocumento = async (socioId: number, file: File) => {
+        const tipo = DocumentoTipo.DNI;
+        const formData = new FormData();
+        formData.append("documento", file);
+        formData.append("tipo", tipo);
+        const response = await fetch(`/api/v1/documentos?idSocio=${socioId}`, {
+            method: "POST",
+            headers: { authorization: `Bearer ${token}` },
+            body: formData,
+        });
+        if (!response.ok) {
+            return handleErrorResponse(response, "Error al crear documento");
+        }
+        const { message } = await response.json();
+        toastContext?.addToast({ text: message });
+        fetchSocios();
+    };
+
     const addEtiqueta = async (socioId: number, etiquetaId: number) => {
         const response = await fetch(`/api/v1/etiquetas/socio/${socioId}`, {
             method: "POST",
@@ -215,7 +246,7 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         const { message } = await response.json();
         toastContext?.addToast({ text: message });
         fetchSocios();
-    }
+    };
 
     const removeEtiqueta = async (socioId: number, etiquetaId: number) => {
         const response = await fetch(`/api/v1/etiquetas/socio/${socioId}`, {
@@ -232,7 +263,22 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         const { message } = await response.json();
         toastContext?.addToast({ text: message });
         fetchSocios();
-    }
+    };
+
+    /*
+        Este fetch no setea estado sino que devuelve las notas del socio.
+    */
+    const getNotasFromSocio = async (socioId: number) => {
+        const response = await fetch(`/api/v1/notas?idSocio=${socioId}`, {
+            headers: { authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) {
+            handleErrorResponse(response, "Error al obtener notas del socio");
+            return [];
+        }
+        const data = await response.json();
+        return data.notas as NotaDto[];
+    };
 
     return (
         <DataContext.Provider
@@ -247,8 +293,11 @@ export function DataProvider({ children }: React.PropsWithChildren) {
                 getSocio,
                 createSocio,
                 updateSocio,
+                deleteSocio,
                 addEtiqueta,
-                removeEtiqueta
+                removeEtiqueta,
+                uploadDocumento,
+                getNotasFromSocio,
             }}
         >
             {children}

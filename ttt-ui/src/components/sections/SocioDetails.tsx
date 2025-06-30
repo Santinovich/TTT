@@ -11,12 +11,55 @@ interface SocioDetailsProps {
     socio: SocioDto;
 }
 
-function EmptyDocumentPreview() {
+function EmptyDocumentPreview({ socio }: { socio: SocioDto }) {
+    const dataContext = useContext(DataContext);
+    if (!dataContext) return null;
+
+    const [file, setFile] = useState<File | null>(null);
+
     return (
-        <div className="doc-preview empty">
-            <FontAwesomeIcon icon={faUpload} size={"2x"} />
-            <span>Añadir documento</span>
-        </div>
+        <>
+            {file ? (
+                <>
+                    <div className="doc-preview">
+                        <img src={URL.createObjectURL(file)} alt={file.name} />
+                    </div>
+                    <div className="buttons">
+                        <button
+                            onClick={() => {
+                                if (file) {
+                                    dataContext.uploadDocumento(socio.id, file);
+                                }
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faUpload} />
+                            Subir
+                        </button>
+                        <button
+                            onClick={() => {
+                                setFile(null);
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faClose} />
+                            Cancelar
+                        </button>
+                    </div>
+                </>
+            ) : (
+                <>
+                    <label htmlFor="documento-upload" className="doc-preview empty">
+                        <FontAwesomeIcon icon={faUpload} size={"2x"} />
+                        <span>Añadir documento</span>
+                    </label>
+                    <input
+                        type="file"
+                        id="documento-upload"
+                        style={{ display: "none" }}
+                        onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+                    />
+                </>
+            )}
+        </>
     );
 }
 
@@ -95,93 +138,80 @@ function SocioDetails({ socio }: SocioDetailsProps) {
     const dataContext = useContext(DataContext);
     if (!dataContext) return null;
     return (
-        <div className="socio-details">
-            <div className="socio-details-data-container">
-                <div className="socio-details-data">
-                    <h2>Detalles del Socio</h2>
-                    <p>
-                        <strong>Nombre:</strong> {socio.nombre}
-                    </p>
-                    <p>
-                        <strong>Apellido:</strong> {socio.apellido || <span className="info-text">No especificado</span>}
-                    </p>
-                    <p>
-                        <strong>DNI:</strong> {socio.numeroDni || <span className="info-text">No especificado</span>}
-                    </p>
-                    <p>
-                        <strong>Fecha de Nacimiento:</strong>{" "}
-                        {socio.fechaNacimiento ? (
-                            new Date(socio.fechaNacimiento).toLocaleDateString()
-                        ) : (
-                            <span className="info-text">No especificado</span>
-                        )}
-                    </p>
-                    <p>
-                        <strong>Domicilio:</strong> {socio.ubicacion?.domicilio || <span className="info-text">No especificado</span>}
-                    </p>
-                    <p>
-                        <strong>Barrio:</strong> {socio.ubicacion?.barrioId || <span className="info-text">No especificado</span>}
-                    </p>
-                    <p>
-                        <strong>Teléfono:</strong> {socio.contacto?.telefono || <span className="info-text">No especificado</span>}
-                    </p>
-                    <p>
-                        <strong>Email:</strong> {socio.contacto?.correo || <span className="info-text">No especificado</span>}
-                    </p>
-                </div>
-                <div className="socio-details-misc">
-                    <h3>Documentos</h3>
-                    <div className="documentos">
-                        {socio.documentos && socio.documentos.length > 0 ? (
-                            <>
-                                <DocumentPreview key={socio.documentos[0].id} doc={socio.documentos[0]} />
-                                <div className="buttons">
-                                    <button>
-                                        <FontAwesomeIcon icon={faUpload} /> Agregar
-                                    </button>
-                                    <button disabled={socio.documentos.length <= 1}>
-                                        <FontAwesomeIcon icon={faEye} /> Ver todos
-                                    </button>
-                                </div>
-                            </>
-                        ) : (
-                            <EmptyDocumentPreview />
-                        )}
-                    </div>
-                    <h3>Etiquetas</h3>
-                    <div className="etiquetas">
-                        {socio.etiquetas && socio.etiquetas.length > 0 ? (
-                            socio.etiquetas.map((etiqueta) => {
-                                return (
-                                    <Etiqueta
-                                        etiqueta={etiqueta}
-                                        onClick={() => {
-                                            dataContext.removeEtiqueta(socio.id, etiqueta.id);
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faDeleteLeft} />
-                                    </Etiqueta>
-                                );
-                            })
-                        ) : (
-                            <>
-                                <span>No hay etiquetas</span>
-                            </>
-                        )}
-                        <EtiquetaAdder socio={socio} />
-                    </div>
-                </div>
+        <div className="socio-details-container">
+            <div className="socio-details-data">
+                <h2>Detalles del Socio</h2>
+                <p>
+                    <strong>Nombre:</strong> {socio.nombre}
+                </p>
+                <p>
+                    <strong>Apellido:</strong> {socio.apellido || <span className="info-text">No especificado</span>}
+                </p>
+                <p>
+                    <strong>DNI:</strong> {socio.numeroDni || <span className="info-text">No especificado</span>}
+                </p>
+                <p>
+                    <strong>Fecha de Nacimiento:</strong>{" "}
+                    {socio.fechaNacimiento ? (
+                        new Date(socio.fechaNacimiento).toLocaleDateString()
+                    ) : (
+                        <span className="info-text">No especificado</span>
+                    )}
+                </p>
+                <p>
+                    <strong>Domicilio:</strong> {socio.ubicacion?.domicilio || <span className="info-text">No especificado</span>}
+                </p>
+                <p>
+                    <strong>Barrio:</strong> {socio.ubicacion?.barrioId || <span className="info-text">No especificado</span>}
+                </p>
+                <p>
+                    <strong>Teléfono:</strong> {socio.contacto?.telefono || <span className="info-text">No especificado</span>}
+                </p>
+                <p>
+                    <strong>Email:</strong> {socio.contacto?.correo || <span className="info-text">No especificado</span>}
+                </p>
             </div>
-            <div className="socio-details-actions-container">
-                <button>
-                    <FontAwesomeIcon icon={faTrash} />
-                </button>
-                <button>
-                    <FontAwesomeIcon icon={faNoteSticky} />
-                </button>
-                <button>
-                    <FontAwesomeIcon icon={faEdit} />
-                </button>
+            <div className="socio-details-misc">
+                <h3>Documentos</h3>
+                <div className="documentos">
+                    {socio.documentos && socio.documentos.length > 0 ? (
+                        <>
+                            <DocumentPreview key={socio.documentos[0].id} doc={socio.documentos[0]} />
+                            <div className="buttons">
+                                <button>
+                                    <FontAwesomeIcon icon={faUpload} /> Agregar
+                                </button>
+                                <button disabled={socio.documentos.length <= 1}>
+                                    <FontAwesomeIcon icon={faEye} /> Ver todos
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <EmptyDocumentPreview socio={socio} />
+                    )}
+                </div>
+                <h3>Etiquetas</h3>
+                <div className="etiquetas">
+                    {socio.etiquetas && socio.etiquetas.length > 0 ? (
+                        socio.etiquetas.map((etiqueta) => {
+                            return (
+                                <Etiqueta
+                                    etiqueta={etiqueta}
+                                    onClick={() => {
+                                        dataContext.removeEtiqueta(socio.id, etiqueta.id);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faDeleteLeft} />
+                                </Etiqueta>
+                            );
+                        })
+                    ) : (
+                        <>
+                            <span>No hay etiquetas</span>
+                        </>
+                    )}
+                    <EtiquetaAdder socio={socio} />
+                </div>
             </div>
         </div>
     );
