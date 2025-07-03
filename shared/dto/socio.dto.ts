@@ -34,7 +34,7 @@ export interface CreateSocioDto {
     apellido?: string;
     fechaNacimiento?: string;
     numeroDni?: number;
-    genero: Genero;
+    genero?: Genero;
     ubicacion?: {
         domicilio: string;
         barrioId?: number;
@@ -44,6 +44,11 @@ export interface CreateSocioDto {
         telefono?: string;
         correo?: string;
     };
+}
+
+export interface CreateSocioResponseDto {
+    message: string;
+    socio: SocioDto;
 }
 
 export interface UpdateSocioDto extends Partial<CreateSocioDto> {}

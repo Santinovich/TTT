@@ -1,0 +1,39 @@
+.window.etiquetas-manager .current-etiquetas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.window.etiquetas-manager .etiqueta-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.window.etiquetas-manager .etiqueta-item {
+    display: flex;
+}
+
+.window.etiquetas-manager .etiqueta-item > * {
+    flex: 1;
+}
+
+.window.etiquetas-manager .etiqueta-item > *:first-child,
+.window.etiquetas-manager .etiqueta-item > *:last-child {
+    flex: 0.1;
+}
+
+.window.etiquetas-manager .etiqueta-color {
+    flex: .2
+}
+
+.form-row.create-etiqueta {
+    display: flex;
+}
+
+.form-row.create-etiqueta > *:first-child,
+.form-row.create-etiqueta > *:last-child 
+{
+    flex: 0.3;
+}

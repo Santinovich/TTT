@@ -9,22 +9,26 @@ function Header() {
     const { token, setToken } = dataContext;
 
     const handleLogout = () => {
-      if (token) {
-        localStorage.removeItem("token");
-        setToken(null);
-        window.location.href = "/login";
-      }
+        if (token) {
+            localStorage.removeItem("token");
+            setToken(null);
+            window.location.href = "/login";
+        }
     };
 
     return (
-      <div className="header">
-        <div className="logo">
-          <img src={TTT} alt="TTT" />
-          <span> TTT</span>
+        <div className="header">
+            <button className="logo">
+                <img src={TTT} alt="TTT" />
+                <span>TTT</span>
+            </button>
+            <div className="buttons">
+                <button>Acerca de</button>
+                {!window.location.href.includes("/login") ? (
+                    <button onClick={handleLogout}>Cerrar sesión</button>
+                ) : null}
+            </div>
         </div>
-
-        <button onClick={handleLogout}>Cerrar sesión</button>
-      </div>
     );
   }
 }

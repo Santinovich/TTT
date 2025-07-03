@@ -1,12 +1,12 @@
 .dropdown-menu {
     position: relative;
+    z-index: 1000;
 }
 
 .menu-list {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    
+
     position: absolute;
     overflow-y: scroll;
 
@@ -15,19 +15,15 @@
 
     background-color: var(--background-contrast);
 
-    box-shadow: 5px 10px 20px rgba(0, 0, 0, .3);
-}
-
-.menu-list>div {
-    width: 80%;
-
-    display: flex;
-    flex-direction: column;
+    box-shadow: var(--shadow2)
 }
 
 .menu-list-item {
-    padding: 0.25rem;
+    padding: .5rem;
     font-weight: bold;
+    font-size: 0.9rem;
+    width: 100%;
+    border-radius: .25rem;
 }
 
 .menu-list-item:hover {

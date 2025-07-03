@@ -50,7 +50,7 @@ notasRouter.post("/", async (req, res) => {
             fechaCreacion: new Date(),
         });
         const dto = mapNotasToDtos([nota])[0];
-        res.status(201).json(dto);
+        res.status(201).json({message: "Nota creada correctamente", nota: dto});
     } catch (error) {
         console.error(error);
         if (error instanceof TTTError) {

@@ -1,3 +1,5 @@
+export const defaultEtiquetaColor = "#15367b";
+
 export interface EtiquetaDto {
     id: number;
     nombre: string;

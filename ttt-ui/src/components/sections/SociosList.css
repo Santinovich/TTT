@@ -41,6 +41,14 @@
     flex: 0.15;
 }
 
+.socios-list .no-socios {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    color: var(--font-light);
+    font-size: 0.9rem;
+}
+
 /* Componentes hijos */
 
 .socios-list-side-panel {
@@ -55,9 +63,22 @@
     gap: 0.5rem;
 }
 
+.socios-list-side-panel .barrios-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.socios-list-side-panel .etiquetas {
+    gap: .5rem;
+}
+
 .socio-panel {
+    --socio-panel-default-height: 400px;
+
     z-index: 1;
     width: 100%;
+    min-height: var(--socio-panel-default-height);
     background-color: var(--background-contrast);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     display: flex;
@@ -126,14 +147,6 @@
     border: 1px dashed var(--font-light);
 }
 
-.socio-panel .etiquetas {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-}
-
 .socio-panel .etiquetas > span {
     font-size: 0.9rem;
     color: var(--font-light);
@@ -147,28 +160,61 @@
     border-radius: 0.75rem;
 }
 
-.socio-panel .etiqueta {
-    position: relative;
-    display: flex;
-    align-items: center;
-    font-size: 0.75rem;
-    font-weight: bold;
-    background-color: var(--primary-color);
-    box-shadow: var(--shadow3);
-    padding: 0.25rem 0.5rem;
-    height: 1.75rem;
-    border-radius: 0.5rem;
-    gap: 0.25rem;
-}
-
-.socio-panel .etiqueta:hover {
-    background-color: color-mix(in srgb, var(--primary-color), white 10%);
-    cursor: pointer;
-}
-
 /* Sección de notas */
 
 .socio-notas-container {
+    height: var(--socio-panel-default-height);
+    display: flex;
+    flex-direction: column;
+}
+
+.socio-notas-container .notas {
+    flex: 1;
+    overflow-y: scroll;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.socio-notas-container .socio-nota-input {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-self: flex-end;
+}
+
+.socio-notas-container .socio-nota-input button {
+    height: 100%;
+}
+
+.socio-notas-container .socio-nota {
+    display: flex;
+    align-items: center;
+    font-family: monospace;
+    box-shadow: var(--shadow3);
+    padding: .5rem;
+
+    word-break: break-all;
+    min-height: 35px;
+}
+
+.socio-notas-container .socio-nota > p {
+    flex: 1;
+}
+
+.socio-notas-container .socio-nota > button {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin: 0 .5rem;
+    background-color: transparent;
+    color: var(--font-light);
+}
+
+.socio-notas-container .socio-nota.empty {
+    color: var(--font-light);
 }
 
 /* Acciones del panel*/
@@ -188,22 +234,6 @@
     margin: 0.25rem 0;
     background-color: var(--background-main);
 }
-
-/* .socio-panel .etiqueta-hover-content {
-    position: absolute;
-    top: 0;
-    left: 20%;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
-    border-radius: .25rem;
-    padding: .5rem;
-    z-index: 10;
-    display: flex;
-    justify-content: right;
-    border-radius: .5rem;
-    animation: fadeIn 0.1s ease-in-out;
-} */
 
 .socio-panel .etiquetas .etiquetas-list {
     position: absolute;

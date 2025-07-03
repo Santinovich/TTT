@@ -1,6 +1,6 @@
 import express from "express";
 import SociosService from "../service/SocioService";
-import { CreateSocioDto } from "@shared/dto/socio.dto";
+import { CreateSocioDto, CreateSocioResponseDto } from "@shared/dto/socio.dto";
 import { mapSocioToDto } from "../utils/dto-mappers";
 import TTTError from "../utils/ttt-error";
 import { Genero } from "ttt-shared/enum/genero.enum";
@@ -55,7 +55,11 @@ sociosRouter.post("/", async (req, res) => {
 
     try {
         const newSocio = await sociosService.createSocio(socioData);
-        res.status(201).json(mapSocioToDto(newSocio));
+        const response: CreateSocioResponseDto = {
+            message: "Socio creado correctamente",
+            socio: mapSocioToDto(newSocio),
+        }
+        res.status(201).json(response);
     } catch (error) {
         console.error(error);
         if (error instanceof TTTError) {

@@ -1,15 +1,13 @@
-import { SocioDto } from "ttt-shared/dto/socio.dto";
 import "./SociosList.css";
+
+import { SocioDto } from "ttt-shared/dto/socio.dto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAdd, faClose, faDeleteLeft, faEdit, faEye, faNoteSticky, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faClose, faDeleteLeft, faEye, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { DocumentoDto } from "ttt-shared/dto/documento.dto";
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../../context/DataContext";
 import { EtiquetaDto } from "ttt-shared/dto/etiqueta.dto";
-
-interface SocioDetailsProps {
-    socio: SocioDto;
-}
+import Etiqueta from "../pure/Etiqueta";
 
 function EmptyDocumentPreview({ socio }: { socio: SocioDto }) {
     const dataContext = useContext(DataContext);
@@ -71,26 +69,6 @@ function DocumentPreview({ doc }: { doc: DocumentoDto }) {
     );
 }
 
-function Etiqueta({ children, etiqueta, onClick }: { children?: React.ReactNode; etiqueta: EtiquetaDto; onClick?: () => void }) {
-    const [hovered, setHovered] = useState(false);
-
-    return (
-        <div
-            onMouseEnter={() => {
-                setHovered(true);
-            }}
-            onMouseLeave={() => {
-                setHovered(false);
-            }}
-            key={etiqueta.id}
-            className="etiqueta"
-            style={etiqueta.color ? { backgroundColor: `#${etiqueta.color}` } : {}}
-            onClick={onClick ? onClick : undefined}
-        >
-            <span>{etiqueta.nombre}</span> {children ? children : null}
-        </div>
-    );
-}
 
 function EtiquetaAdder({ socio }: { socio: SocioDto }) {
     const dataContext = useContext(DataContext);
@@ -134,9 +112,15 @@ function EtiquetaAdder({ socio }: { socio: SocioDto }) {
     );
 }
 
-function SocioDetails({ socio }: SocioDetailsProps) {
+function SocioDetails({ socio }: { socio: SocioDto }) {
     const dataContext = useContext(DataContext);
     if (!dataContext) return null;
+
+    const getBarrioNombre = (barrioId?: number) => {
+        const barrio = dataContext.barrios.find((b) => b.id === barrioId);
+        return barrio ? barrio.nombre : <span className="info-text">No especificado</span>;
+    }
+
     return (
         <div className="socio-details-container">
             <div className="socio-details-data">
@@ -162,7 +146,7 @@ function SocioDetails({ socio }: SocioDetailsProps) {
                     <strong>Domicilio:</strong> {socio.ubicacion?.domicilio || <span className="info-text">No especificado</span>}
                 </p>
                 <p>
-                    <strong>Barrio:</strong> {socio.ubicacion?.barrioId || <span className="info-text">No especificado</span>}
+                    <strong>Barrio:</strong> {getBarrioNombre(socio.ubicacion?.barrioId)}
                 </p>
                 <p>
                     <strong>Teléfono:</strong> {socio.contacto?.telefono || <span className="info-text">No especificado</span>}

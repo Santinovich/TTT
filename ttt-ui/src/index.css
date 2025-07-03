@@ -14,6 +14,7 @@
     --shadow3: 4px 4px 4px rgba(0, 0, 0, 0.15);
 
     --input-height: 32px;
+    --button-height: 32px;
 
     background-color: var(--background-main);
     color: var(--font-primary);
@@ -34,7 +35,21 @@ html,
     box-sizing: border-box;
 }
 
-input, select {
+*::-webkit-scrollbar {
+    width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--background-main);
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+input, select, textarea {
     border: 0px;
     
     background-color: rgba(255, 255, 255, 0.13);
@@ -47,9 +62,36 @@ input, select {
     height: var(--input-height);
 }
 
+textarea {
+    resize: none;
+    overflow-y: hidden;
+    height: auto;
+    min-height: var(--input-height);
+    field-sizing: content;
+}
+
 input[type="checkbox"] {
     width: var(--input-height);
     height: var(--input-height);
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input[type="color"] {
+    background-color: transparent;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
 }
 
 select option {
@@ -57,7 +99,7 @@ select option {
 }
 
 button {
-    border: 1px solid var(--background-main);
+    border: 0px;
     border-radius: 5px;
 
     display: flex;
@@ -69,12 +111,16 @@ button {
     box-shadow: var(--shadow3);
     color: var(--font-primary);
     padding: .5rem 1rem;
+
+    height: var(--button-height);
+
 }
 
 button:hover {
     cursor: pointer;
     background-color: color-mix(in srgb, var(--primary-color), white 10%);
-    border-color: var(--primary-color);
+        transition: all 0.05s ease-in-out;
+
 }
 
 button:disabled {
@@ -85,6 +131,51 @@ button:disabled {
 
 .main-container {
     width: 80%;
+}
+
+.window-layer{
+    position: absolute;
+    z-index: 900;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, .3);
+    backdrop-filter: blur(2px);
+    cursor: pointer;
+}
+
+.window {
+    width: 90%;
+    padding: 2rem;
+    max-width: 800px;
+    background-color: var(--background-contrast);
+    border-radius: .5rem;
+    cursor: default;
+}
+
+.window .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.window .form-row > div {
+    flex: 1;
+}
+
+.window .form-row button {
+    flex: 1;
+}
+
+.window .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .selected {
@@ -115,4 +206,22 @@ button:disabled {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+@media (max-width: 1000px) {
+.window {
+        scale: 0.9;
+    }
+
+    .window .form-row {
+        margin-bottom: 0.5rem;
+    }
+
+    .window .form-row.wrap {
+        flex-direction: column;
+    }
+
+    .window .form-group {
+        margin-bottom: 0;
+    }
 }

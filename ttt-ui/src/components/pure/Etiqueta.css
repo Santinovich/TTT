@@ -1,0 +1,28 @@
+/* Contenedor de etiquetas */
+.etiquetas {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0px;
+    margin: 0px;
+    gap: 0.5rem;
+}
+
+.etiqueta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    box-shadow: var(--shadow3);
+    padding: 0.25rem 0.5rem;
+    height: 1.75rem;
+    border-radius: 0.5rem;
+    gap: 0.25rem;
+}
+
+.etiqueta:hover {
+    background-color: color-mix(in srgb, var(--primary-color), white 10%);
+    cursor: pointer;
+}

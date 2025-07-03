@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { ToastContext } from "./ToastContext";
 import { useNavigate } from "react-router-dom";
-import { CreateSocioDto, GetSociosDto, SocioDto } from "ttt-shared/dto/socio.dto";
+import { CreateSocioDto, CreateSocioResponseDto, GetSociosDto, SocioDto } from "ttt-shared/dto/socio.dto";
 import { BarrioDto, GetBarriosDto } from "ttt-shared/dto/ubicacion.dto";
 import { fetchWithTimeout } from "../utils/fetchWithTimeout";
 import { EtiquetaDto } from "ttt-shared/dto/etiqueta.dto";
@@ -16,13 +16,16 @@ interface DataContextType {
     barrios: BarrioDto[];
     etiquetas: EtiquetaDto[];
     getSocio: (id: number) => SocioDto | undefined;
-    createSocio: (newSocioData: CreateSocioDto) => void;
+    createSocio: (newSocioData: CreateSocioDto) => Promise<SocioDto | null>;
     updateSocio: (id: number, newSocioData: CreateSocioDto) => void;
     deleteSocio: (id: number) => void;
     uploadDocumento: (socioId: number, file: File) => void;
     addEtiqueta: (socioId: number, etiquetaId: number) => void;
+    updateEtiqueta: (etiquetaId: number, nombre: string, descripcion?: string, color?: string) => void;
     removeEtiqueta: (socioId: number, etiquetaId: number) => void;
     getNotasFromSocio: (socioId: number) => Promise<NotaDto[]>;
+    addNotaToSocio: (socioId: number, notaText: string) => Promise<void>;
+    deleteNota: (notaId: number) => Promise<void>;
     fetchSocios: () => Promise<void>;
 }
 
@@ -179,11 +182,12 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         });
         if (!response.ok) {
             handleErrorResponse(response, "Error al crear socio");
+            return null;
         }
-        const body = await response.json();
-        console.log(body);
+        const { socio } = (await response.json()) as CreateSocioResponseDto;
         toastContext?.addToast({ text: "Socio creado" });
         fetchSocios();
+        return socio;
     };
 
     const updateSocio = async (id: number, newSocioData: CreateSocioDto) => {
@@ -248,6 +252,24 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         fetchSocios();
     };
 
+    const updateEtiqueta = async (etiquetaId: number, nombre: string, descripcion?: string, color?: string) => {
+        const response = await fetch(`/api/v1/etiquetas/${etiquetaId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ nombre, descripcion, color }),
+        });
+        if (!response.ok) {
+            return handleErrorResponse(response, "Error al actualizar etiqueta");
+        }
+        const { message } = await response.json();
+        toastContext?.addToast({ text: message ? message : "Etiqueta actualizada" });
+        fetchEtiquetas();
+        fetchSocios();
+    }
+
     const removeEtiqueta = async (socioId: number, etiquetaId: number) => {
         const response = await fetch(`/api/v1/etiquetas/socio/${socioId}`, {
             method: "DELETE",
@@ -280,6 +302,35 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         return data.notas as NotaDto[];
     };
 
+    const addNotaToSocio = async (socioId: number, notaText: string) => {
+        const response = await fetch(`/api/v1/notas?idSocio=${socioId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ texto: notaText }),
+        });
+        if (!response.ok) {
+            return handleErrorResponse(response, "Error al agregar nota al socio");
+        }
+        const { message } = await response.json();
+        toastContext?.addToast({ text: message });
+    }
+
+    const delteNota = async (notaId: number) => {
+        const response = await fetch(`/api/v1/notas/${notaId}`, {
+            method: "DELETE",
+            headers: { authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) {
+            return handleErrorResponse(response, "Error al eliminar nota");
+        }
+        const { message } = await response.json();
+        toastContext?.addToast({ text: message });
+        return;
+    }
+
     return (
         <DataContext.Provider
             value={{
@@ -295,9 +346,12 @@ export function DataProvider({ children }: React.PropsWithChildren) {
                 updateSocio,
                 deleteSocio,
                 addEtiqueta,
+                updateEtiqueta,
                 removeEtiqueta,
                 uploadDocumento,
                 getNotasFromSocio,
+                addNotaToSocio,
+                deleteNota: delteNota
             }}
         >
             {children}

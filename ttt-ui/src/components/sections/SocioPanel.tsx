@@ -5,6 +5,7 @@ import { faCircleUser, faEdit, faNoteSticky, faTrash } from "@fortawesome/free-s
 import { DataContext } from "../../context/DataContext";
 import { useContext, useState } from "react";
 import SocioNotas from "./SocioNotas";
+import SocioEditor from "./SocioEditor";
 
 enum SocioPanelSections {
     Details,
@@ -24,6 +25,7 @@ function SocioPanel({ socio }: { socio: SocioDto }) {
             <div className="socio-panel-section-container">
                 {selectedSection === SocioPanelSections.Details ? <SocioDetails socio={socio} /> : null}
                 {selectedSection === SocioPanelSections.AddNote ? <SocioNotas socio={socio} /> : null}
+                {selectedSection === SocioPanelSections.Edit ? <SocioEditor socio={socio} /> : null}
             </div>
             <div className="socio-panel-actions-container">
                 <button onClick={() => setSelectedSection(SocioPanelSections.Details)}>
