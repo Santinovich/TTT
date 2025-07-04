@@ -11,7 +11,6 @@ export default function Login() {
   if (dataContext) {
     const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
-      // Aquí puedes agregar la lógica para enviar los datos del formulario
       dataContext.login(username, password);
     };
 

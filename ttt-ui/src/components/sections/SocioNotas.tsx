@@ -20,7 +20,12 @@ function Nota({ nota, index, onDelete }: { nota: NotaDto; index: number, onDelet
         >
             <p>
                 <strong>{index}. </strong>
-                {nota.texto}
+                {nota.texto.split("\n").map((line, i) => (
+                    <span key={i}>
+                        {line}
+                        {i < nota.texto.split("\n").length - 1 ? <br /> : null}
+                    </span>
+                ))}
             </p>
             {hovered ? (
                 <>

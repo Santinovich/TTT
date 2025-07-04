@@ -41,8 +41,8 @@ export interface CreateSocioDto {
     };
     etiquetasIds?: number[];
     contacto?: {
-        telefono?: string;
-        correo?: string;
+        telefono?: string | null;
+        correo?: string | null;
     };
 }
 
@@ -51,4 +51,6 @@ export interface CreateSocioResponseDto {
     socio: SocioDto;
 }
 
-export interface UpdateSocioDto extends Partial<CreateSocioDto> {}
+export type UpdateSocioDto = {
+    [K in keyof CreateSocioDto]?: CreateSocioDto[K] | null;
+};

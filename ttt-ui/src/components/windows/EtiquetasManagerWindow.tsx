@@ -65,6 +65,7 @@ function EtiquetasManagerWindow({
             toastContext.addToast({ text: "El nombre de la etiqueta es obligatorio", type: "error" });
             return;
         }
+
         dataContext.createEtiqueta(
             newEtiquetaNombre,
             newEtiquetaDescripcion,
@@ -89,11 +90,11 @@ function EtiquetasManagerWindow({
                 <div className="form-row create-etiqueta">
                     <div className="form-group">
                         <label htmlFor="nombre">Nombre</label>
-                        <input type="text" name="nombre" />
+                        <input type="text" name="nombre" value={newEtiquetaNombre} onChange={(e) => setNewEtiquetaNombre(e.target.value)}/>
                     </div>
                     <div className="form-group">
                         <label htmlFor="descripcion">Descripción</label>
-                        <input type="text" name="descripcion" />
+                        <input type="text" name="descripcion" value={newEtiquetaDescripcion} onChange={(e) => setNewEtiquetaDescripcion(e.target.value)}/>
                     </div>
                     <div className="form-group etiqueta-color">
                         <label htmlFor="color">Color</label>
@@ -105,7 +106,9 @@ function EtiquetasManagerWindow({
                         />
                     </div>
                     <div className="form-group">
-                        <button>
+                        <label> </label>
+                        <button 
+                        onClick={handleCreateEtiqueta}>
                             <FontAwesomeIcon icon={faAdd} />
                         </button>
                     </div>

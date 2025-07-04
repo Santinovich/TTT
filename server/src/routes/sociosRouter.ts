@@ -1,13 +1,17 @@
 import express from "express";
+import fs from "fs";
 import SociosService from "../service/SocioService";
 import { CreateSocioDto, CreateSocioResponseDto } from "@shared/dto/socio.dto";
 import { mapSocioToDto } from "../utils/dto-mappers";
 import TTTError from "../utils/ttt-error";
 import { Genero } from "ttt-shared/enum/genero.enum";
+import DocumentoService from "../service/DocumentoService";
+import { documentosPath } from "./documentosRouter";
 
 const sociosRouter = express.Router();
 
 const sociosService = new SociosService();
+const documentosService = new DocumentoService();
 
 sociosRouter.get("/:id?", async (req, res) => {
     const { id } = req.params;
@@ -105,6 +109,17 @@ sociosRouter.delete("/:id", async (req, res) => {
             return;
         }
         await sociosService.deleteSocio(socio.id);
+        // Eliminar los documentos asociados al socio
+        for (const documento of socio.documentos) {
+            try {
+                const filePath = documentosPath + "/" + documento.nombreArchivo;
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            } catch (error) {
+                console.error(`Error al eliminar el documento con ID ${documento.id}:`, error);
+            }
+        }
         res.status(200).send({
             message: "Socio eliminado correctamente",
         });

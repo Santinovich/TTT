@@ -52,7 +52,7 @@
 /* Componentes hijos */
 
 .socios-list-side-panel {
-    min-width: 350px;
+    min-width: 275px;
     padding: 1rem;
     background-color: var(--background-contrast);
 }
@@ -63,10 +63,19 @@
     gap: 0.5rem;
 }
 
-.socios-list-side-panel .barrios-filter {
+.socios-list-side-panel .barrios-filter,
+.socios-list-side-panel .etiquetas-filter 
+{
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+}
+
+.socios-list-side-panel .edad-range-filter {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.9rem;
 }
 
 .socios-list-side-panel .etiquetas {
@@ -74,7 +83,7 @@
 }
 
 .socio-panel {
-    --socio-panel-default-height: 400px;
+    --socio-panel-default-height: 450px;
 
     z-index: 1;
     width: 100%;
@@ -84,33 +93,46 @@
     display: flex;
 }
 
-.socio-details-container {
-    width: 100%;
-    padding: 1rem;
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-}
-
 .socio-panel-section-container {
     width: 100%;
 }
 
+.socio-details-container {
+    min-height: var(--socio-panel-default-height);
+    padding: 1rem;
+    display: flex;
+}
+
+.socio-panel-section-container .socio-details-container .col {
+    display: flex;
+    flex-direction: column;
+    padding: 0 .5rem;
+}
+
 .socio-panel-section-container .socio-details-data {
-    flex: 0.6;
+    flex: .7;
+    display: flex;
+    justify-content: center;
+}
+
+.socio-data-field {
+    box-shadow: var(--shadow3);
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+}
+
+.socio-data-field p {
+    margin: 0;
 }
 
 .socio-panel-section-container .socio-details-misc {
-    flex: 0.4;
+    flex: 0.3;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .socio-panel .documentos {
     width: 100%;
     min-width: 250px;
-    max-width: 400px;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -119,32 +141,84 @@
 .socio-panel .documentos .buttons {
     display: flex;
     flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
-.socio-panel .documentos button {
+.socio-panel .documentos .buttons > * {
     flex: 0.5;
+    font-size: .9rem;
 }
 
-.socio-panel .doc-preview,
-.socio-panel .doc-preview img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 0.5rem;
+.socio-panel .documento-upload-label{
+    background-color: var(--background-main);
+    font-weight: bold;
+    padding: .5rem;
+    text-align: center;
+    border: 1px dashed var(--font-light);
+    border-radius: 5px;
+}
+
+.socio-panel .documento-upload-label:hover {
+    background-color: color-mix(in srgb, var(--primary-color), var(--background-contrast) 90%);
     cursor: pointer;
+}
+
+.socio-panel .doc-preview {
+    --doc-preview-radius: 0.5rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    
+    font-size: 0.9rem;
+
+    clip-path: inset(0 round var(--doc-preview-radius));
+    width: 100%;
+    cursor: pointer;
+    background-color: var(--background-main);
 }
 
 .socio-panel .doc-preview.empty {
     background-color: var(--background-main);
     color: var(--font-light);
-    display: flex;
-    flex-direction: column;
     gap: 1rem;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
+    padding: 1rem;
+
     font-style: italic;
     border: 1px dashed var(--font-light);
+    border-radius: var(--doc-preview-radius)
+}
+
+
+.socio-panel .doc-preview img {
+    object-fit: cover;
+    width: 100%;
+    height: 140px;
+}
+
+.socio-panel .doc-preview span {
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem;
+    color: var(--font-light);
+}
+
+.socio-panel .doc-preview button {
+    opacity: 0;
+    position: absolute;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.socio-panel .doc-preview button:hover {
+    opacity: 1;
+}
+
+.socio-panel .doc-preview button:first-child {
+    left: 0;
+}
+
+.socio-panel .doc-preview button:last-child {
+    right: 0;
 }
 
 .socio-panel .etiquetas > span {
@@ -195,9 +269,6 @@
     font-family: monospace;
     box-shadow: var(--shadow3);
     padding: .5rem;
-
-    word-break: break-all;
-    min-height: 35px;
 }
 
 .socio-notas-container .socio-nota > p {
@@ -215,6 +286,17 @@
 
 .socio-notas-container .socio-nota.empty {
     color: var(--font-light);
+}
+
+.socio-editor .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.socio-editor .buttons button {
+    flex: 1;
 }
 
 /* Acciones del panel*/
@@ -251,7 +333,7 @@
     gap: 0.25rem;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
     .socios-list-container {
         flex-wrap: wrap;
     }
@@ -275,6 +357,13 @@
     .socio-panel-section-container .socio-details-data,
     .socio-panel-section-container .socio-details-misc {
         width: 100%;
+    }
+}
+
+@media (max-width: 1300px) {
+    .socio-details-container {
+        display: flex;
+        flex-direction: column;
     }
 }
 

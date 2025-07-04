@@ -10,6 +10,7 @@ import parseEnv from "./utils/parse-env";
 import etiquetasRouter from "./routes/etiquetasRouter";
 import notasRouter from "./routes/notasRouter";
 import documentosRouter from "./routes/documentosRouter";
+import authProfile from "./middleware/authProfile";
 
 
 async function init() {
@@ -23,11 +24,11 @@ async function init() {
     app.use(cors());
     app.use(express.json());
 
-    app.use("/api/v1/socios", sociosRouter);
-    app.use("/api/v1/etiquetas", etiquetasRouter);
-    app.use("/api/v1/ubicacion", ubicacionRouter);
-    app.use("/api/v1/notas", notasRouter);
-    app.use("/api/v1/documentos", documentosRouter);
+    app.use("/api/v1/socios", authProfile, sociosRouter);
+    app.use("/api/v1/etiquetas", authProfile, etiquetasRouter);
+    app.use("/api/v1/ubicacion", authProfile, ubicacionRouter);
+    app.use("/api/v1/notas", authProfile, notasRouter);
+    app.use("/api/v1/documentos", authProfile, documentosRouter);
     app.use("/api/v1/auth", authRouter);
 
     app.use("/api/v1/static/documentos", express.static("uploads/documentos"));

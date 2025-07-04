@@ -6,7 +6,7 @@ import { DocumentoTipo } from "ttt-shared/enum/documento-tipo.enum";
 import { CreateDocumentoDto, GetDocumentoDto, GetDocumentosDto } from "ttt-shared/dto/documento.dto";
 import TTTError from "../utils/ttt-error";
 
-const documentosPath = "uploads/documentos";
+export const documentosPath = "uploads/documentos";
 
 if (!fs.existsSync(documentosPath)) {
     fs.mkdirSync(documentosPath, { recursive: true });
@@ -27,7 +27,8 @@ const storage = multer.diskStorage({
             return;
         }
         const timestamp = Date.now();
-        const uniqueSuffix = `${timestamp}-doc`;
+        const extension = file.originalname.split('.').pop();
+        const uniqueSuffix = `${timestamp}`+ "-" + Math.round(Math.random() * 1e9) + `.${extension}`;
         cb(null, uniqueSuffix);
     },
 });
@@ -133,11 +134,11 @@ documentosRouter.delete("/:idDocumento", async (req, res) => {
             res.status(404).json({ error: "Documento no encontrado" });
             return;
         }
-        const filePath = `${documentosPath}/${documento.nombreArchivo}`;
+        await documentoService.deleteDocumento(idDocumento);
+        const filePath = documentosPath + "/" + documento.nombreArchivo;
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
         }
-        await documentoService.deleteDocumento(idDocumento);
         res.status(200).send({ message: "Documento eliminado correctamente" });
     } catch (error) {
         console.error(error);

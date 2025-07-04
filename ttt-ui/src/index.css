@@ -89,6 +89,7 @@ input[type=number] {
 
 input[type="color"] {
     background-color: transparent;
+    height: 32px;
     padding: 0px;
     margin: 0px;
     border: 0px;
@@ -157,10 +158,27 @@ button:disabled {
     cursor: default;
 }
 
-.window .form-row {
+.form-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.form-row {
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    height: 50px;
 }
 
 .window .form-row > div {
@@ -171,13 +189,6 @@ button:disabled {
     flex: 1;
 }
 
-.window .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
 .selected {
     z-index: 10;
     box-shadow: 0 0 0 1px var(--primary-color);
@@ -186,6 +197,12 @@ button:disabled {
 
 .info-text {
     color: var(--font-light);
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
 }
 
 .col {

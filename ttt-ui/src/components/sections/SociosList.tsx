@@ -10,6 +10,9 @@ import Etiqueta from "../pure/Etiqueta";
 import { EtiquetaDto } from "ttt-shared/dto/etiqueta.dto";
 import CreateSocioWindow from "../windows/CreateSocioWindow";
 import EtiquetasManagerWindow from "../windows/EtiquetasManagerWindow";
+import { exportCsv } from "../../utils/exportCsv";
+import { Genero } from "ttt-shared/enum/genero.enum";
+import React from "react";
 
 
 function NombreFilter({nombreSearch, setNombreSearch}: {nombreSearch?: string; setNombreSearch: Dispatch<string>}) {
@@ -35,6 +38,47 @@ function IdFilter({idSearch, setIdSearch}: {idSearch: string; setIdSearch: Dispa
                 setIdSearch(e.target.value);
             }}
         />
+    );
+}
+
+function GeneroFilter({ genero, setGenero }: { genero: Genero | ""; setGenero: Dispatch<Genero | ""> }) {
+    return (
+        <select
+            value={genero}
+            onChange={(e) => {
+                console.log("Genero seleccionado:", e.target.value);
+                setGenero(e.target.value as Genero);
+            }}
+        >
+            <option value="">Todos los géneros</option>
+            {Object.values(Genero).map((g) => (
+                <option key={g} value={g}>
+                    {g}
+                </option>
+            ))}
+        </select>
+    );
+}
+
+type EdadRange = [number | "", number | ""];
+
+function EdadRangeFilter({ edadRange, setEdadRange }: { edadRange: EdadRange; setEdadRange: Dispatch<EdadRange> }) {
+
+    return (
+        <div className="edad-range-filter">
+            <label>Edad:</label>
+            <input
+                type="number"
+                onChange={(e) => setEdadRange([Number(e.target.value), edadRange[1]])}
+                placeholder="Desde"
+            />
+            -
+            <input
+                type="number"
+                onChange={(e) => setEdadRange([edadRange[0], Number(e.target.value)])}
+                placeholder="Hasta"
+            />
+        </div>
     );
 }
 
@@ -187,8 +231,16 @@ function SociosList({
     const [createSocioWindowHidden, setCreateSocioWindowHidden] = useState<boolean>(true);
     const [etiquetasManagerWindowHidden, setEtiquetasManagerWindowHidden] = useState<boolean>(true);
 
+    useEffect(() => {
+        if (dataContext.token) {
+            dataContext.validateToken();
+        }
+    }, [createSocioWindowHidden, etiquetasManagerWindowHidden, dataContext.token]);
+
     const [filteredSocios, setFilteredSocios] = useState<SocioDto[]>(dataContext.socios);
     const [nombreSearch, setNombreSearch] = useState<string>("");
+    const [generoFilter, setGeneroFilter] = useState<Genero | "">("");
+    const [edadRange, setEdadRange] = useState<EdadRange>(["", ""]);
     const [idFilter, setIdFilter] = useState<string>("");
     const [barriosIdFilters, setBarriosIdFilters] = useState<number[]>([]);
     const [etiquetasFilters, setEtiquetasFilters] = useState<EtiquetaDto[]>([]);
@@ -214,8 +266,20 @@ function SociosList({
                     if (etiquetasFilters.length === 0) return true;
                     return etiquetasFilters.every((e) => s.etiquetas?.some((se) => se.id === e.id));
                 })
+                .filter((s) => {
+                    if (generoFilter === "") return true;
+                    return s.genero === generoFilter;
+                })
+                .filter((s) => {
+                    if (!s.fechaNacimiento) return false;
+                    const start = edadRange[0] ? Number(edadRange[0]) : 0;
+                    const end = edadRange[1] ? Number(edadRange[1]) : Infinity
+                    if (edadRange[0] === "" && edadRange[1] === "") return true;
+                    const edad = calculateYears(s.fechaNacimiento, new Date());
+                    return edad >= start && edad <= end;
+                })
         );
-    }, [dataContext.socios, nombreSearch, idFilter, barriosIdFilters, etiquetasFilters]);
+    }, [dataContext.socios, nombreSearch, idFilter, barriosIdFilters, etiquetasFilters, generoFilter, edadRange]);
 
     const getSelectedIndex = () => {
         const i = filteredSocios.findIndex((s) => selectedSocio?.id === s.id);
@@ -290,6 +354,11 @@ function SociosList({
                             nombreSearch={nombreSearch}
                             setNombreSearch={setNombreSearch}
                         />
+                        <GeneroFilter genero={generoFilter} setGenero={setGeneroFilter} />
+                        <EdadRangeFilter
+                            edadRange={[edadRange[0], edadRange[1]]}
+                            setEdadRange={setEdadRange}
+                        />
                         <BarriosFilter
                             barriosIdFilters={barriosIdFilters}
                             setBarriosIdFilters={setBarriosIdFilters}
@@ -306,8 +375,12 @@ function SociosList({
                         >
                             Alta de socio
                         </button>
-                        <button>Exportar .csv</button>
-                        <button onClick={() => setEtiquetasManagerWindowHidden(false)}>Administrar etiquetas</button>
+                        <button onClick={() => exportCsv(filteredSocios, "socios")}>
+                            Exportar .csv
+                        </button>
+                        <button onClick={() => setEtiquetasManagerWindowHidden(false)}>
+                            Administrar etiquetas
+                        </button>
                     </div>
                 </div>
                 <div className="col">
@@ -324,9 +397,8 @@ function SociosList({
                                     ? calculateYears(s.fechaNacimiento, new Date())
                                     : "N/A";
                                 return (
-                                    <>
+                                    <React.Fragment key={s.id}>
                                         <div
-                                            key={s.id}
                                             className={`socios-list-row ${
                                                 selectedSocio?.id === s.id ? "selected" : ""
                                             }`}
@@ -338,7 +410,7 @@ function SociosList({
                                             <span>{edad}</span>
                                         </div>
                                         {selectedSocio === s ? <SocioPanel socio={s} /> : null}
-                                    </>
+                                    </ React.Fragment>
                                 );
                             })
                         ) : (

@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Socio } from "./Socio";
 import { DocumentoTipo } from "ttt-shared/enum/documento-tipo.enum";
+
 
 @Entity()
 export class Documento {

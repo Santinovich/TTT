@@ -1,6 +1,7 @@
 import express from "express";
 import AuthService from "../service/AuthService";
 import TTTError from "../utils/ttt-error";
+import authProfile, { AuthenticatedRequest } from "../middleware/authProfile";
 
 const authRouter = express.Router();
 
@@ -44,6 +45,14 @@ authRouter.post("/register", async (req, res) => {
         }
         res.status(500).json({ error: "Error desconocido al registrarse" });
     }
+});
+
+authRouter.get("/profile", authProfile, (req: AuthenticatedRequest, res) => {
+    req.usuario
+    if (!req.usuario) {
+        res.status(401).json({ error: "No autorizado" });
+    }
+    res.json(req.usuario);
 });
 
 export default authRouter;

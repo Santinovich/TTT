@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jsonwebtoken from "jsonwebtoken";
 import { UsuarioProfile } from "../types";
-import { UsuarioRol } from "@shared/enum/usuario-rol.enum";
+import { UsuarioRol } from "ttt-shared/enum/usuario-rol.enum";
 
 export interface AuthenticatedRequest extends Request {
   usuario?: UsuarioProfile;
@@ -20,6 +20,7 @@ export default function authProfile(req: AuthenticatedRequest, res: Response, ne
     const token = authHeader.split(" ")[1];
     try {
       const profile = jsonwebtoken.verify(token, secretKey) as UsuarioProfile;
+      console.log(profile)
       if (profile.rol !== UsuarioRol.Admin) {
         res.status(403).json({ message: "No autorizado" });
       } else {
@@ -27,7 +28,8 @@ export default function authProfile(req: AuthenticatedRequest, res: Response, ne
         next();
       }
     } catch (error) {
-      res.status(403).json({ message: "Token inválido" });
+      const expired = error instanceof jsonwebtoken.TokenExpiredError;
+      res.status(403).json({ message: "Token inválido", expired });
     }
   }
 }

@@ -2,14 +2,45 @@ import "./SociosList.css";
 
 import { SocioDto } from "ttt-shared/dto/socio.dto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAdd, faClose, faDeleteLeft, faEye, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faArrowLeft, faArrowRight, faClose, faDeleteLeft, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { DocumentoDto } from "ttt-shared/dto/documento.dto";
-import { useContext, useEffect, useState } from "react";
+import { Dispatch, JSX, useContext, useEffect, useState } from "react";
 import { DataContext } from "../../context/DataContext";
 import { EtiquetaDto } from "ttt-shared/dto/etiqueta.dto";
 import Etiqueta from "../pure/Etiqueta";
 
-function EmptyDocumentPreview({ socio }: { socio: SocioDto }) {
+function NewDocumentoPreview({file, setFile, socio}: { file: File, setFile: Dispatch<File | null>, socio: SocioDto }) {
+    const dataContext = useContext(DataContext);
+    if (!dataContext) return null;
+
+    return (
+        <>
+            <div className="doc-preview">
+                <span>Previsualización</span>
+                <img src={URL.createObjectURL(file)} alt={file.name} />
+            </div>
+            <div className="buttons">
+                <button
+                    onClick={() => {
+                        dataContext.uploadDocumento(socio.id, file);
+                        setFile(null);
+                    }}
+                >
+                    <FontAwesomeIcon icon={faUpload} />
+                    Subir
+                </button>
+                <button onClick={() => {
+                        setFile(null);
+                    }}>
+                    <FontAwesomeIcon icon={faDeleteLeft} />
+                    Calcelar
+                </button>
+            </div>
+        </>
+    );
+}
+
+function EmptyDocumentoPreview({ socio }: { socio: SocioDto }) {
     const dataContext = useContext(DataContext);
     if (!dataContext) return null;
 
@@ -18,31 +49,7 @@ function EmptyDocumentPreview({ socio }: { socio: SocioDto }) {
     return (
         <>
             {file ? (
-                <>
-                    <div className="doc-preview">
-                        <img src={URL.createObjectURL(file)} alt={file.name} />
-                    </div>
-                    <div className="buttons">
-                        <button
-                            onClick={() => {
-                                if (file) {
-                                    dataContext.uploadDocumento(socio.id, file);
-                                }
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faUpload} />
-                            Subir
-                        </button>
-                        <button
-                            onClick={() => {
-                                setFile(null);
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faClose} />
-                            Cancelar
-                        </button>
-                    </div>
-                </>
+                <NewDocumentoPreview file={file} setFile={setFile} socio={socio} />
             ) : (
                 <>
                     <label htmlFor="documento-upload" className="doc-preview empty">
@@ -61,12 +68,88 @@ function EmptyDocumentPreview({ socio }: { socio: SocioDto }) {
     );
 }
 
-function DocumentPreview({ doc }: { doc: DocumentoDto }) {
-    return (
-        <div className="doc-preview">
-            <img src={"api/v1/static/documentos/" + doc.nombreArchivo} alt="" />
-        </div>
-    );
+function DocumentoPreview({ socio }: { socio: SocioDto }) {
+    const dataContext = useContext(DataContext);
+    if (!dataContext) return null;
+
+    const [newDoc, setNewDoc] = useState<File | null>(null);
+
+    const [doc, setDoc] = useState(socio.documentos ? socio.documentos[0] : null);
+    const [docsLength, setDocsLength] = useState(socio.documentos ? socio.documentos.length : 0);
+
+    useEffect(() => {
+        if (socio.documentos && socio.documentos.length > 0) {
+            setDoc(socio.documentos[0]);
+            setDocsLength(socio.documentos.length);
+        } else {
+            setDoc(null);
+            setDocsLength(0);
+        }
+    }, [socio]);
+
+    const getIndex = (doc: DocumentoDto) => {
+        return socio.documentos ? socio.documentos.findIndex((d) => d.id === doc.id) : -1;
+    };
+
+    if (newDoc) {
+        return <NewDocumentoPreview file={newDoc} setFile={setNewDoc} socio={socio} />;
+    }
+    if (doc) {
+        return (
+            <>
+                <div className="doc-preview">
+                    {getIndex(doc) > 0 ? (
+                        <button
+                            onClick={() => {
+                                const index = getIndex(doc);
+                                if (index > 0) {
+                                    setDoc(socio.documentos![index - 1]);
+                                }
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                        </button>
+                    ) : null}
+                    <span>
+                        Documento {getIndex(doc) + 1} / {docsLength}
+                    </span>
+                    <img src={"api/v1/static/documentos/" + doc.nombreArchivo} alt="" />
+                    {getIndex(doc) < (socio.documentos?.length || 0) - 1 ? (
+                        <button
+                            onClick={() => {
+                                const index = getIndex(doc);
+                                if (index < (socio.documentos?.length || 0) - 1) {
+                                    setDoc(socio.documentos![index + 1]);
+                                }
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faArrowRight} />
+                        </button>
+                    ) : null}
+                </div>
+                <div className="buttons">
+                    <input
+                        type="file"
+                        id="documento-upload"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                            if (e.target.files && e.target.files.length > 0) {
+                                setNewDoc(e.target.files[0]);
+                            }
+                        }}
+                    />
+                    <label htmlFor="documento-upload" className="documento-upload-label">
+                        Añadir
+                    </label>
+                    <button onClick={() => {if (doc) dataContext.deleteDocumento(doc.id)}}>
+                        Eliminar
+                    </button>
+                </div>
+            </>
+        );
+    } else {
+        return <EmptyDocumentoPreview socio={socio} />;
+    }
 }
 
 
@@ -112,6 +195,24 @@ function EtiquetaAdder({ socio }: { socio: SocioDto }) {
     );
 }
 
+function SocioField({
+    label,
+    value,
+}: {
+    label: string;
+    value: string | JSX.Element | undefined | null;
+}) {
+    return (
+        <div className="socio-data-field">
+            <p>
+                <span className="info-text">{label}</span>
+                <br />
+                <strong>{value || <span className="info-text">No especificado</span>}</strong>
+            </p>
+        </div>
+    );
+}
+
 function SocioDetails({ socio }: { socio: SocioDto }) {
     const dataContext = useContext(DataContext);
     if (!dataContext) return null;
@@ -124,77 +225,58 @@ function SocioDetails({ socio }: { socio: SocioDto }) {
     return (
         <div className="socio-details-container">
             <div className="socio-details-data">
-                <h2>Detalles del Socio</h2>
-                <p>
-                    <strong>Nombre:</strong> {socio.nombre}
-                </p>
-                <p>
-                    <strong>Apellido:</strong> {socio.apellido || <span className="info-text">No especificado</span>}
-                </p>
-                <p>
-                    <strong>DNI:</strong> {socio.numeroDni || <span className="info-text">No especificado</span>}
-                </p>
-                <p>
-                    <strong>Fecha de Nacimiento:</strong>{" "}
-                    {socio.fechaNacimiento ? (
-                        new Date(socio.fechaNacimiento).toLocaleDateString()
-                    ) : (
-                        <span className="info-text">No especificado</span>
-                    )}
-                </p>
-                <p>
-                    <strong>Domicilio:</strong> {socio.ubicacion?.domicilio || <span className="info-text">No especificado</span>}
-                </p>
-                <p>
-                    <strong>Barrio:</strong> {getBarrioNombre(socio.ubicacion?.barrioId)}
-                </p>
-                <p>
-                    <strong>Teléfono:</strong> {socio.contacto?.telefono || <span className="info-text">No especificado</span>}
-                </p>
-                <p>
-                    <strong>Email:</strong> {socio.contacto?.correo || <span className="info-text">No especificado</span>}
-                </p>
-            </div>
-            <div className="socio-details-misc">
-                <h3>Documentos</h3>
-                <div className="documentos">
-                    {socio.documentos && socio.documentos.length > 0 ? (
-                        <>
-                            <DocumentPreview key={socio.documentos[0].id} doc={socio.documentos[0]} />
-                            <div className="buttons">
-                                <button>
-                                    <FontAwesomeIcon icon={faUpload} /> Agregar
-                                </button>
-                                <button disabled={socio.documentos.length <= 1}>
-                                    <FontAwesomeIcon icon={faEye} /> Ver todos
-                                </button>
-                            </div>
-                        </>
-                    ) : (
-                        <EmptyDocumentPreview socio={socio} />
-                    )}
+                <div className="col">
+                    <h3>Datos generales</h3>
+                    <SocioField label="Nombre" value={socio.nombre} />
+                    <SocioField label="Apellido" value={socio.apellido} />
+                    <SocioField label="DNI" value={socio.numeroDni?.toString()} />
+                    <SocioField
+                        label="Fecha de Nacimiento"
+                        value={
+                            socio.fechaNacimiento
+                                ? new Date(socio.fechaNacimiento).toLocaleDateString()
+                                : undefined
+                        }
+                    />
+                    <SocioField label="Género" value={socio.genero} />
                 </div>
-                <h3>Etiquetas</h3>
-                <div className="etiquetas">
-                    {socio.etiquetas && socio.etiquetas.length > 0 ? (
-                        socio.etiquetas.map((etiqueta) => {
-                            return (
-                                <Etiqueta
-                                    etiqueta={etiqueta}
-                                    onClick={() => {
-                                        dataContext.removeEtiqueta(socio.id, etiqueta.id);
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faDeleteLeft} />
-                                </Etiqueta>
-                            );
-                        })
-                    ) : (
-                        <>
-                            <span>No hay etiquetas</span>
-                        </>
-                    )}
-                    <EtiquetaAdder socio={socio} />
+                <div className="col">
+                    <h3>Contacto</h3>
+                    <SocioField label="Teléfono" value={socio.contacto?.telefono} />
+                    <SocioField label="Email" value={socio.contacto?.correo} />
+                    <SocioField label="Domicilio" value={socio.ubicacion?.domicilio} />
+                    <SocioField label="Barrio" value={getBarrioNombre(socio.ubicacion?.barrioId)} />
+                </div>
+            </div>
+
+            <div className="socio-details-misc">
+                <div className="col">
+                    <h3>Documentos</h3>
+                    <div className="documentos">
+                        <DocumentoPreview socio={socio} />
+                    </div>
+                    <h3>Etiquetas</h3>
+                    <div className="etiquetas">
+                        {socio.etiquetas && socio.etiquetas.length > 0 ? (
+                            socio.etiquetas.map((etiqueta) => {
+                                return (
+                                    <Etiqueta
+                                        etiqueta={etiqueta}
+                                        onClick={() => {
+                                            dataContext.removeEtiqueta(socio.id, etiqueta.id);
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faDeleteLeft} />
+                                    </Etiqueta>
+                                );
+                            })
+                        ) : (
+                            <>
+                                <span>No hay etiquetas</span>
+                            </>
+                        )}
+                        <EtiquetaAdder socio={socio} />
+                    </div>
                 </div>
             </div>
         </div>
