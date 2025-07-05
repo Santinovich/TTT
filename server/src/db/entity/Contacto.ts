@@ -7,10 +7,10 @@ export class Contacto {
     id: number;
 
     @Column({ type: "text", nullable: true })
-    telefono: string;
+    telefono: string | null;
 
     @Column({ type: "text", nullable: true })
-    correo: string;
+    correo: string | null;
 
     @OneToOne(() => Socio, (socio) => socio.contacto, { onDelete: "CASCADE" })
     @JoinColumn()

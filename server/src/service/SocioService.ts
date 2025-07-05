@@ -45,8 +45,8 @@ export default class SociosService {
         }
         if (socioDto.contacto) {
             const newContacto = this.contactoRepository.create({
-                telefono: socioDto.contacto.telefono,
-                correo: socioDto.contacto.correo,
+                telefono: socioDto.contacto.telefono || undefined,
+                correo: socioDto.contacto.correo || undefined,
             });
             newSocio.contacto = newContacto;
         }
