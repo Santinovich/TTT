@@ -3,7 +3,7 @@ import { Dispatch, useContext, useState } from "react";
 import { DataContext } from "../../context/DataContext";
 import { defaultEtiquetaColor, EtiquetaDto } from "ttt-shared/dto/etiqueta.dto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAdd, faDatabase, faPencil, faSave } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faSave } from "@fortawesome/free-solid-svg-icons";
 import { ToastContext } from "../../context/ToastContext";
 
 function EtiquetaItem({ etiqueta }: { etiqueta: EtiquetaDto }) {

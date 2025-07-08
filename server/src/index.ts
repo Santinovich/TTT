@@ -33,11 +33,11 @@ async function init() {
 
     app.use("/api/v1/static/documentos", authProfile, express.static("uploads/documentos"));
 
+    app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+
     app.get("*", (req, res) => {
         res.sendFile(path.join(__dirname, "public", "index.html"));
     });
-    app.use("/assets", express.static(path.join(__dirname, "public/assets")));
-
 
     app.listen(port, async () => {
         console.log(`Servidor de TTT corriendo\n\nLocal:   http://localhost:${port}/`);

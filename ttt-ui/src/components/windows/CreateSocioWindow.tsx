@@ -1,5 +1,5 @@
 import "./CreateSocioWindow.css";
-import { Dispatch, useContext, useEffect } from "react";
+import { Dispatch, useContext } from "react";
 import { DataContext } from "../../context/DataContext";
 import { Genero } from "ttt-shared/enum/genero.enum";
 import { CreateSocioDto, SocioDto } from "ttt-shared/dto/socio.dto";
