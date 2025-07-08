@@ -62,7 +62,6 @@ export function DataProvider({ children }: React.PropsWithChildren) {
 
     const handleErrorResponse = async (errorResponse: Response, defaultMessage: string = "Error en el servidor") => {
         const errorData = await errorResponse.json();
-        console.log(errorData)
         if (errorData.expired) {
             localStorage.removeItem("token");
             setToken(null);

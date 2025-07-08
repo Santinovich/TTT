@@ -8,6 +8,7 @@ import { Dispatch, JSX, useContext, useEffect, useState } from "react";
 import { DataContext } from "../../context/DataContext";
 import { EtiquetaDto } from "ttt-shared/dto/etiqueta.dto";
 import Etiqueta from "../pure/Etiqueta";
+import { ModalContext } from "../../context/ModalContext";
 
 function NewDocumentoPreview({file, setFile, socio}: { file: File, setFile: Dispatch<File | null>, socio: SocioDto }) {
     const dataContext = useContext(DataContext);
@@ -70,7 +71,8 @@ function EmptyDocumentoPreview({ socio }: { socio: SocioDto }) {
 
 function DocumentoPreview({ socio }: { socio: SocioDto }) {
     const dataContext = useContext(DataContext);
-    if (!dataContext) return null;
+    const modal = useContext(ModalContext);
+    if (!dataContext || !modal) return null;
 
     const [newDoc, setNewDoc] = useState<File | null>(null);
 
@@ -160,7 +162,13 @@ function DocumentoPreview({ socio }: { socio: SocioDto }) {
                     </label>
                     <button
                         onClick={() => {
-                            if (doc) dataContext.deleteDocumento(doc.id);
+                            if (doc) {
+                                modal.confirm({
+                                    title: "Eliminar Documento",
+                                    message: `Se eliminará el documento seleccionado. Esta acción es irreversible.`,
+                                    onConfirm: () => dataContext.deleteDocumento(doc.id),
+                                });
+                            }
                         }}
                     >
                         Eliminar

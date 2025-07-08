@@ -6,6 +6,7 @@ import { DataContext } from "../../context/DataContext";
 import { useContext, useState } from "react";
 import SocioNotas from "./SocioNotas";
 import SocioEditor from "./SocioEditor";
+import { ModalContext } from "../../context/ModalContext";
 
 enum SocioPanelSections {
     Details,
@@ -16,7 +17,8 @@ enum SocioPanelSections {
 
 function SocioPanel({ socio }: { socio: SocioDto }) {
     const dataContext = useContext(DataContext);
-    if (!dataContext) return null;
+    const modal = useContext(ModalContext);
+    if (!dataContext || !modal) return null;
 
     const [selectedSection, setSelectedSection] = useState<SocioPanelSections | null>(SocioPanelSections.Details);
 
@@ -37,7 +39,11 @@ function SocioPanel({ socio }: { socio: SocioDto }) {
                 <button onClick={() => setSelectedSection(SocioPanelSections.Edit)}>
                     <FontAwesomeIcon icon={faEdit} />
                 </button>
-                <button onClick={() => dataContext.deleteSocio(socio.id)}>
+                <button onClick={() => modal.confirm({
+                    title: "Eliminar Socio",
+                    message: `Se va a eliminar al socio ${socio.nombre} ${socio.apellido} (ID ${socio.id}) y todos sus datos asociados. La acción es irreversible.`,
+                    onConfirm: () => dataContext.deleteSocio(socio.id)
+                })}>
                     <FontAwesomeIcon icon={faTrash} />
                 </button>
             </div>

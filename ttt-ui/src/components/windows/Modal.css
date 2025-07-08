@@ -1,0 +1,26 @@
+.confirm-modal {
+    background-color: var(--background-main);
+    border: 1px solid var(--background-highlight);
+    box-shadow: var(--shadow3);
+    padding: 1rem 2rem;
+    min-width: 300px;
+    max-width: 500px;
+    width: 80%;
+}
+
+.confirm-modal p {
+    font-size: .9rem;
+}
+.confirm-modal:hover {
+    cursor: default;
+}
+
+.confirm-modal .buttons {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0 0 ;
+}
+
+.confirm-modal .buttons button {
+    flex: 1;
+}
