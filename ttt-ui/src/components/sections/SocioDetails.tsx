@@ -75,7 +75,19 @@ function DocumentoPreview({ socio }: { socio: SocioDto }) {
     const [newDoc, setNewDoc] = useState<File | null>(null);
 
     const [doc, setDoc] = useState(socio.documentos ? socio.documentos[0] : null);
+    const [docImg, setDocImg] = useState<string | null>(null);
+
     const [docsLength, setDocsLength] = useState(socio.documentos ? socio.documentos.length : 0);
+
+    useEffect(() => {
+        if (doc) {
+            dataContext.getDocumentoImg(doc.nombreArchivo).then((img) => {
+                setDocImg(img);
+            });
+        } else {
+            setDocImg(null);
+        }
+    }, [doc, dataContext]);
 
     useEffect(() => {
         if (socio.documentos && socio.documentos.length > 0) {
@@ -113,7 +125,12 @@ function DocumentoPreview({ socio }: { socio: SocioDto }) {
                     <span>
                         Documento {getIndex(doc) + 1} / {docsLength}
                     </span>
-                    <img src={"api/v1/static/documentos/" + doc.nombreArchivo} alt="" />
+
+                    {docImg ? (
+                        <img src={docImg || ""} alt="" />
+                    ) : (
+                        <span className="info-text">No se pudo cargar la imagen del documento</span>
+                    )}
                     {getIndex(doc) < (socio.documentos?.length || 0) - 1 ? (
                         <button
                             onClick={() => {
@@ -141,7 +158,11 @@ function DocumentoPreview({ socio }: { socio: SocioDto }) {
                     <label htmlFor="documento-upload" className="documento-upload-label">
                         Añadir
                     </label>
-                    <button onClick={() => {if (doc) dataContext.deleteDocumento(doc.id)}}>
+                    <button
+                        onClick={() => {
+                            if (doc) dataContext.deleteDocumento(doc.id);
+                        }}
+                    >
                         Eliminar
                     </button>
                 </div>

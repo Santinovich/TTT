@@ -64,18 +64,36 @@ type EdadRange = [number | "", number | ""];
 
 function EdadRangeFilter({ edadRange, setEdadRange }: { edadRange: EdadRange; setEdadRange: Dispatch<EdadRange> }) {
 
+    const handleEdadChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const value = e.target.value;
+        const newRange = [...edadRange] as EdadRange;
+
+        if (value === "") {
+            newRange[index] = "";
+        } else {
+            const numValue = Number(value);
+            if (!isNaN(numValue)) {
+                newRange[index] = numValue;
+            }
+        }
+
+        setEdadRange(newRange);
+    }
+
     return (
         <div className="edad-range-filter">
             <label>Edad:</label>
             <input
                 type="number"
-                onChange={(e) => setEdadRange([Number(e.target.value), edadRange[1]])}
+                onChange={(e) => handleEdadChange(e, 0)}
+                value={edadRange[0] === "" ? "" : edadRange[0]}
                 placeholder="Desde"
             />
             -
             <input
                 type="number"
-                onChange={(e) => setEdadRange([edadRange[0], Number(e.target.value)])}
+                onChange={(e) => handleEdadChange(e, 1)}
+                value={edadRange[1] === "" ? "" : edadRange[1]} 
                 placeholder="Hasta"
             />
         </div>
@@ -271,10 +289,10 @@ function SociosList({
                     return s.genero === generoFilter;
                 })
                 .filter((s) => {
+                    if (edadRange[0] === "" && edadRange[1] === "") return true;
                     if (!s.fechaNacimiento) return false;
                     const start = edadRange[0] ? Number(edadRange[0]) : 0;
                     const end = edadRange[1] ? Number(edadRange[1]) : Infinity
-                    if (edadRange[0] === "" && edadRange[1] === "") return true;
                     const edad = calculateYears(s.fechaNacimiento, new Date());
                     return edad >= start && edad <= end;
                 })
@@ -322,6 +340,8 @@ function SociosList({
         setIdFilter("");
         setBarriosIdFilters([]);
         setEtiquetasFilters([]);
+        setGeneroFilter("");
+        setEdadRange(["", ""]);
     };
 
     const handleSocioSelect = (socio: SocioDto) => {

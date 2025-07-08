@@ -22,6 +22,7 @@ interface DataContextType {
     deleteSocio: (id: number) => void;
     uploadDocumento: (socioId: number, file: File) => void;
     deleteDocumento: (docId: number) => Promise<boolean>;
+    getDocumentoImg: (docFileName: string) => Promise<string | null>;
     addEtiqueta: (socioId: number, etiquetaId: number) => void;
     createEtiqueta: (nombre: string, descripcion?: string, color?: string) => void;
     updateEtiqueta: (etiquetaId: number, nombre: string, descripcion?: string, color?: string) => void;
@@ -288,6 +289,18 @@ export function DataProvider({ children }: React.PropsWithChildren) {
         return true;
     };
 
+    const getDocumentoImg = async (docFileName: string) => {
+        const response = await fetch(`/api/v1/static/documentos/${docFileName}`, {
+            headers: { authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) {
+            handleErrorResponse(response, "Error al obtener imagen del documento");
+            return null;
+        }
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+    }
+
     const addEtiqueta = async (socioId: number, etiquetaId: number) => {
         const response = await fetch(`/api/v1/etiquetas/socio/${socioId}`, {
             method: "POST",
@@ -421,6 +434,7 @@ export function DataProvider({ children }: React.PropsWithChildren) {
                 removeEtiqueta,
                 uploadDocumento,
                 deleteDocumento,
+                getDocumentoImg,
                 getNotasFromSocio,
                 addNotaToSocio,
                 deleteNota: delteNota

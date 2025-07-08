@@ -31,7 +31,7 @@ async function init() {
     app.use("/api/v1/documentos", authProfile, documentosRouter);
     app.use("/api/v1/auth", authRouter);
 
-    app.use("/api/v1/static/documentos", express.static("uploads/documentos"));
+    app.use("/api/v1/static/documentos", authProfile, express.static("uploads/documentos"));
 
     app.get("*", (req, res) => {
         res.sendFile(path.join(__dirname, "public", "index.html"));
