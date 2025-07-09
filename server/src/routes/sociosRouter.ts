@@ -60,7 +60,7 @@ sociosRouter.post("/", async (req, res) => {
     try {
         const newSocio = await sociosService.createSocio(socioData);
         const response: CreateSocioResponseDto = {
-            message: "Socio creado correctamente",
+            message: "Socio creado",
             socio: mapSocioToDto(newSocio),
         }
         res.status(201).json(response);
@@ -85,7 +85,11 @@ sociosRouter.patch("/:id", async (req, res) => {
 
     try {
         const updatedSocio = await sociosService.updateSocio(parseInt(id), newSocioData);
-        res.status(200).json(mapSocioToDto(updatedSocio));
+        const response: CreateSocioResponseDto = {
+            message: "Datos del socio actualizados",
+            socio: mapSocioToDto(updatedSocio),
+        }
+        res.status(200).json(response);
     } catch (error) {
         console.error(error);
         if (error instanceof TTTError) {

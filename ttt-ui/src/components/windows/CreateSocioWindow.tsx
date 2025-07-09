@@ -52,7 +52,10 @@ function CreateSocioWindow({
                 });
                 return;
             }
-            newSocioData.fechaNacimiento = fechaNacimiento;
+            const [year, month, day] = fechaNacimiento.split("-");
+
+            // TODO: No debería sumarse un día
+                newSocioData.fechaNacimiento = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day) + 1)).toISOString();
         }
 
         const genero = formData.get("genero") as string;

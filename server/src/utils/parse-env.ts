@@ -3,10 +3,15 @@ import fs from "fs";
 
 export default function () {
     configDotenv();
-    const requiredEnvVars = ["PORT", "SECRET_KEY"];
+    const requiredEnvVars = ["PORT", "SECRET_KEY", "NODE_ENV"];
     const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
     if (missingEnvVars.length > 0) {
-        fs.writeFileSync(".env", "PORT=\nSECRET_KEY=");
+        var fileStr = "";
+        missingEnvVars.forEach((envVar) => {
+            fileStr += `${envVar}=${envVar === "NODE_ENV" ? "production" : ""}\n`;
+        });
+        
+        fs.writeFileSync(".env", fileStr, { flag: "a" });
 
         throw new Error(
             `Faltan las siguientes variables de entorno: ${missingEnvVars.join(

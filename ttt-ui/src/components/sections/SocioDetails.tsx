@@ -251,6 +251,18 @@ function SocioDetails({ socio }: { socio: SocioDto }) {
         return barrio ? barrio.nombre : <span className="info-text">No especificado</span>;
     }
 
+    const getFechaNacimientoString = (fecha?: string | Date) => {
+        if (!fecha) return;
+        if (typeof fecha === "string") {
+            fecha = new Date(fecha);
+        }
+        return fecha.toLocaleDateString('es-AR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
     return (
         <div className="socio-details-container">
             <div className="socio-details-data">
@@ -261,11 +273,7 @@ function SocioDetails({ socio }: { socio: SocioDto }) {
                     <SocioField label="DNI" value={socio.numeroDni?.toString()} />
                     <SocioField
                         label="Fecha de Nacimiento"
-                        value={
-                            socio.fechaNacimiento
-                                ? new Date(socio.fechaNacimiento).toLocaleDateString()
-                                : undefined
-                        }
+                        value={getFechaNacimientoString(socio.fechaNacimiento)}
                     />
                     <SocioField label="Género" value={socio.genero} />
                 </div>

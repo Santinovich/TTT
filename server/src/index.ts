@@ -1,12 +1,13 @@
+import parseEnv from "./utils/parse-env";
+parseEnv();
 import express from "express";
 import cors from "cors";
-import path from "path";
+import path, { parse } from "path";
 import { AppDataSource } from "./db/data-source";
 import { seedDb } from "./db/seedDb";
 import sociosRouter from "./routes/sociosRouter";
 import ubicacionRouter from "./routes/ubicacionRouter";
 import authRouter from "./routes/authRouter";
-import parseEnv from "./utils/parse-env";
 import etiquetasRouter from "./routes/etiquetasRouter";
 import notasRouter from "./routes/notasRouter";
 import documentosRouter from "./routes/documentosRouter";
@@ -16,7 +17,6 @@ import authProfile from "./middleware/authProfile";
 async function init() {
     await AppDataSource.initialize();
     await seedDb();
-    parseEnv();
 
     const app = express();
     const port = parseInt(process.env.PORT as string);

@@ -29,10 +29,14 @@ export default class SociosService {
         const newSocio = this.sociosRepository.create({
             nombre: socioDto.nombre,
             apellido: socioDto.apellido,
-            fechaNacimiento: socioDto.fechaNacimiento ? new Date(socioDto.fechaNacimiento) : null,
             numeroDni: socioDto.numeroDni,
             genero: socioDto.genero,
         });
+        if (socioDto.fechaNacimiento) {
+            const [year, month, day] = socioDto.fechaNacimiento.split("T")[0]?.split("-").map(Number) || [];
+            const dateUTC = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+            newSocio.fechaNacimiento = dateUTC;
+        }
         if (socioDto.ubicacion) {
           const barrio = await this.barrioRepository.findOne({
                 where: { id: socioDto.ubicacion.barrioId }
@@ -68,7 +72,9 @@ export default class SociosService {
             socio.apellido = newSocioData.apellido;
         }
         if (newSocioData.fechaNacimiento !== undefined) {
-            socio.fechaNacimiento = new Date(newSocioData.fechaNacimiento);
+            const [year, month, day] = newSocioData.fechaNacimiento.split("T")[0]?.split("-").map(Number) || [];
+            const dateUTC = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+            socio.fechaNacimiento = dateUTC;
         }
         if (newSocioData.numeroDni !== undefined) {
             socio.numeroDni = newSocioData.numeroDni;

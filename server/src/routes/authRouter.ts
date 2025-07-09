@@ -8,7 +8,6 @@ const authRouter = express.Router();
 const authService = new AuthService();
 
 authRouter.post("/login", async (req, res) => {
-    console.log(req.body)
     const { username, password } = req.body;
     if (!username || !password) {
         res.status(401).send("Se necesita un usuario y una contraseña");

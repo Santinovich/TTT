@@ -152,7 +152,14 @@ export function DataProvider({ children }: React.PropsWithChildren) {
             }
             const { socios } = (await response.json()) as GetSociosDto;
             socios.forEach((socio) => {
-                socio.fechaNacimiento = socio.fechaNacimiento ? new Date(socio.fechaNacimiento) : undefined;
+                if (typeof socio.fechaNacimiento === "string") {
+                    const [year, month, day] = socio.fechaNacimiento.split("-");
+                    // Convertir a UTC para evitar problemas de zona horaria
+                    socio.fechaNacimiento = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0));
+                }
+                socio.fechaNacimiento = socio.fechaNacimiento
+                    ? new Date(socio.fechaNacimiento)
+                    : undefined;
             });
             setSocios(socios);
         } catch (error) {

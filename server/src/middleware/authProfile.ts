@@ -20,7 +20,6 @@ export default function authProfile(req: AuthenticatedRequest, res: Response, ne
     const token = authHeader.split(" ")[1];
     try {
       const profile = jsonwebtoken.verify(token, secretKey) as UsuarioProfile;
-      console.log(profile)
       if (profile.rol !== UsuarioRol.Admin) {
         res.status(403).json({ message: "No autorizado" });
       } else {

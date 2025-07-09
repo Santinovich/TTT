@@ -11,7 +11,6 @@ export const stringDateTransformer: ValueTransformer = {
 
 export const nullableStringDateTransformer: ValueTransformer = {
     to(value: Date | null): string | null {
-        console.log(value)
         return value ? value.toISOString() : null;
     },
     from(value: string | null): Date | null {
